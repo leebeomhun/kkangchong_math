@@ -148,7 +148,7 @@ def run():
                 contexts[0].set_offline(False); sync(a, 0)
                 assert store.snapshot()['state']['stickers'] == {}
                 assert a.evaluate("!!localStorage.getItem('kkangchong-sync-recovery-v1')")
-                fresh = browser.new_context()
+                fresh = browser.new_context(reduced_motion='reduce')   # 둥실거리는 풍선도 바로 누를 수 있게
                 c = fresh.new_page()
                 c.on('pageerror', lambda e: errors.append(str(e)))
                 c.route('**/api/sync', lambda route: route.abort())

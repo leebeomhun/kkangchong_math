@@ -1,7 +1,7 @@
 {
   "name": "깡충 수학",
   "short_name": "깡충수학",
-  "description": "깡충이와 징검다리를 건너며 배우는 유아 더하기 놀이",
+  "description": "강토끼와 징검다리를 건너며 배우는 유아 더하기 놀이",
   "lang": "ko",
   "start_url": "./",
   "scope": "./",

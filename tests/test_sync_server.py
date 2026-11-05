@@ -11,6 +11,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'server'))
 from sync_server import Invalid, Store, SyncServer, UnknownChild, empty_state
+from voice import BadText, Voice, VoiceBudget, VoiceUnavailable
 
 
 def event(kind='answer', **extra):
@@ -180,12 +181,57 @@ class StoreTests(unittest.TestCase):
         self.assertEqual(self.store.snapshot()['state']['settings']['count'], 12)
 
 
+FAKE_MP3 = b'ID3' + bytes(2000)
+
+
+class VoiceTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.calls = []
+        self.voice = Voice(Path(self.temp.name), 'key', 'tc_test', monthly_limit=40, label='로로',
+                           fetch=lambda text, tempo: self.calls.append((text, tempo)) or FAKE_MP3)
+
+    def tearDown(self):
+        self.temp.cleanup()
+
+    def test_same_sentence_is_made_once_and_counted(self):
+        self.assertEqual(self.voice.clip('  18 더하기 2는   뭘까? '), FAKE_MP3)
+        self.assertEqual(self.voice.clip('18 더하기 2는 뭘까?'), FAKE_MP3)
+        self.assertEqual(self.calls, [('18 더하기 2는 뭘까?', 1.0)])
+        self.voice.clip('18 더하기 2는 뭘까?', '0.85')   # 빠르기가 다르면 따로 만듦
+        status = self.voice.status()
+        self.assertEqual((status['used'], status['limit'], status['voice']), (26, 40, '로로'))   # 13자 × 빠르기 2가지
+
+    def test_concurrent_requests_make_one_clip(self):
+        with concurrent.futures.ThreadPoolExecutor(max_workers=6) as pool:
+            list(pool.map(lambda _: self.voice.clip('딩동댕!'), range(6)))
+        self.assertEqual(len(self.calls), 1)
+
+    def test_monthly_limit_and_bad_input(self):
+        self.voice.clip('괜찮아! 같이 세어 볼까? 강토끼랑 같이 세어 보자.')
+        with self.assertRaises(VoiceBudget):
+            self.voice.clip('하나 더 만들면 이번 달 한도를 넘어요.')
+        self.assertEqual(self.voice.clip('괜찮아! 같이 세어 볼까? 강토끼랑 같이 세어 보자.'), FAKE_MP3)   # 저장된 것은 계속 나옴
+        for bad in ['', '<script>', '가' * 121, '!!!']:
+            with self.assertRaises(BadText):
+                self.voice.clip(bad)
+        with self.assertRaises(BadText):
+            self.voice.clip('딩동댕!', '3')
+
+    def test_without_key_is_unavailable(self):
+        voice = Voice(Path(self.temp.name) / 'off', '', 'tc_test')
+        with self.assertRaises(VoiceUnavailable):
+            voice.clip('딩동댕!')
+        self.assertFalse(voice.status()['enabled'])
+
+
 class HTTPTests(unittest.TestCase):
     def setUp(self):
         StoreTests.setUp(self)
         self.token = 'private-test-token-' * 3
         self.origin = 'https://aiedu.codesearch.ai.kr'
-        self.server = SyncServer(('127.0.0.1', 0), self.store, self.token, self.origin)
+        self.voice = Voice(Path(self.temp.name) / 'tts', 'key', 'tc_test', monthly_limit=12, label='로로', fetch=lambda text, tempo: FAKE_MP3)
+        self.server = SyncServer(('127.0.0.1', 0), self.store, self.token, self.origin, voice=self.voice)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
         self.url = f'http://127.0.0.1:{self.server.server_port}/api/sync'
@@ -215,6 +261,32 @@ class HTTPTests(unittest.TestCase):
         self.assertEqual(self.request(body, **headers)[0], 403)
         headers['Origin'] = self.origin
         self.assertEqual(self.request(body, **headers)[0], 200)
+
+    def test_voice_endpoint(self):
+        from urllib.parse import quote
+        base = self.url.replace('/api/sync', '/api/tts')
+        def get(query=''):
+            req = urllib.request.Request(base + query, headers={'X-Kkangchong-Token': self.token})
+            try:
+                with urllib.request.urlopen(req) as r:
+                    return r.status, r.headers, r.read()
+            except urllib.error.HTTPError as r:
+                return r.code, r.headers, r.read()
+        status, headers, body = get('?t=1&text=' + quote('딩동댕!'))
+        self.assertEqual((status, headers['Content-Type'], body), (200, 'audio/mpeg', FAKE_MP3))
+        self.assertIn('immutable', headers['Cache-Control'])
+        status, _, body = get()
+        self.assertEqual((status, json.loads(body)['used']), (200, 4))
+        self.assertEqual(get('?text=' + quote('한도를 넘는 아주 긴 문장이에요.'))[0], 429)
+        self.assertEqual(get('?text=' + quote('<b>'))[0], 400)
+        req = urllib.request.Request(base + '?text=x')   # 토큰이 없으면 거절
+        with self.assertRaises(urllib.error.HTTPError) as no_token:
+            urllib.request.urlopen(req)
+        self.assertEqual(no_token.exception.code, 403)
+        post = urllib.request.Request(base, data=b'{}', headers={'X-Kkangchong-Token': self.token, 'Origin': self.origin, 'Content-Type': 'application/json'})
+        with self.assertRaises(urllib.error.HTTPError) as posted:
+            urllib.request.urlopen(post)
+        self.assertEqual(posted.exception.code, 405)
 
     def test_child_query_and_operations(self):
         headers = {'X-Kkangchong-Token': self.token, 'Origin': self.origin, 'Content-Type': 'application/json'}

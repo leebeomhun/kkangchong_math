@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>깡충 수학</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="깡충이와 징검다리를 건너며 배우는 유아 더하기 놀이">
+<meta name="description" content="강토끼와 징검다리를 건너며 배우는 유아 더하기 놀이">
 <!--pwa-->
 <meta name="theme-color" content="#e3f3fb" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#141c36" media="(prefers-color-scheme: dark)">
@@ -132,7 +132,10 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
 .icon-btn.round{ border-radius:50% }
 .ring{ position:absolute; inset:-5px; width:calc(100% + 10px); height:calc(100% + 10px); transform:rotate(-90deg); pointer-events:none }
 .ring circle{ fill:none; stroke:var(--carrot); stroke-width:5; stroke-linecap:round; stroke-dasharray:100; stroke-dashoffset:100; transition:stroke-dashoffset .2s }
-.holding .ring circle{ stroke-dashoffset:0; transition:stroke-dashoffset 1.5s linear }
+.holding .ring circle{ stroke-dashoffset:0; transition:stroke-dashoffset var(--hold-time,.8s) linear }
+/* 처음 몇 번은 톱니 아래에 '길게 누르기'를 알려 줌 */
+.hold-hint{ position:absolute; top:calc(100% + 9px); right:-6px; z-index:2; padding:4px 10px; border-radius:999px; background:var(--panel); box-shadow:0 2px 0 var(--panel-line); color:var(--ink-soft); font:700 12px/1.25 var(--font-body); white-space:nowrap; pointer-events:none }
+.hold-hint::before{ content:""; position:absolute; top:-5px; right:28px; width:10px; height:10px; background:inherit; transform:rotate(45deg) }
 .pill{ display:inline-flex; align-items:center; gap:8px; padding:10px 18px; border-radius:999px; background:var(--panel); box-shadow:0 4px 0 var(--panel-line); font:600 24px/1 var(--font-num); font-variant-numeric:tabular-nums }
 .star-ico{ width:26px; height:26px; fill:var(--star); stroke:var(--star-deep); stroke-width:1.5; stroke-linejoin:round }
 .big-btn{ border:0; border-radius:26px; padding:20px 28px; font:400 clamp(26px,7vw,36px)/1 var(--font-ko); color:var(--on-carrot); background:var(--carrot); box-shadow:0 7px 0 var(--carrot-deep); transition:transform .08s, box-shadow .08s, opacity .2s; display:inline-flex; align-items:center; justify-content:center; gap:12px }
@@ -145,7 +148,7 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
 .text-btn{ border:0; background:none; color:var(--ink-soft); font:400 20px var(--font-ko); padding:10px 12px; text-decoration:underline; text-underline-offset:4px }
 /* 길게 눌러야 하는 보호자용 글자 버튼: 누르는 동안 밑줄이 차오름 */
 .text-btn.hold{ background:linear-gradient(var(--carrot),var(--carrot)) left calc(100% - 4px) / 0% 4px no-repeat; transition:background-size .2s }
-.text-btn.hold.holding{ background-size:100% 4px; transition:background-size 1.5s linear }
+.text-btn.hold.holding{ background-size:100% 4px; transition:background-size var(--hold-time,.8s) linear }
 .invisible{ visibility:hidden }
 .screen-title{ margin:0; font:400 clamp(26px,7vw,34px)/1.1 var(--font-ko); text-align:center; flex:1 }
 .badge{ display:inline-block; vertical-align:middle; margin-left:6px; padding:3px 10px; border-radius:999px; background:var(--step-bg); color:var(--step-fg); font:700 13px/1.3 var(--font-body) }
@@ -272,7 +275,12 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
 .kid-row .now{ padding:4px 10px; border-radius:999px; background:var(--step-bg); color:var(--step-fg); font-size:13px; font-weight:700 }
 .kid-add{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px }
 .voice-note{ margin:10px 0 0; color:var(--ink-soft); font-size:14px }
+.select{ min-height:46px; max-width:100%; padding:0 10px; border-radius:14px; border:2px solid var(--panel-line); background:var(--sky); color:var(--ink); font:700 16px var(--font-body) }
 .voice-note.warn{ color:var(--berry) }
+.voice-prep{ margin:8px 0 0; display:flex; align-items:center; gap:10px; color:var(--ink-soft); font-size:14px }
+.voice-prep .bar3{ flex:0 0 90px; height:8px; border-radius:999px; background:var(--dim); overflow:hidden }
+.voice-prep .bar3 i{ display:block; height:100%; background:var(--leaf); border-radius:inherit; transition:width .3s }
+#parent[data-engine="natural"] .device-only{ display:none }
 
 /* ---- play ---- */
 #play{ display:grid; grid-template-columns:minmax(0,1fr); grid-template-rows:auto auto auto minmax(0,1fr) auto; grid-template-areas:"top" "eq" "talk" "stage" "choices"; gap:8px }
@@ -307,7 +315,7 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
     radial-gradient(34% 8px at 60% 90%, var(--ripple), transparent 70%),
     linear-gradient(180deg, var(--water), var(--water-deep)); }
 .stones{ position:relative; display:flex; gap:clamp(4px,1.4vw,12px); justify-content:center; font-size:clamp(18px,5.4vw,32px) }
-/* 돌이 너무 작아지면(더하는 수가 클 때) 돌 크기를 지키고 옆으로 밀어 보기. 깡충이를 따라 저절로 움직임 */
+/* 돌이 너무 작아지면(더하는 수가 클 때) 돌 크기를 지키고 옆으로 밀어 보기. 강토끼를 따라 저절로 움직임 */
 .pond.scroll{ overflow-x:auto; overflow-y:hidden; overscroll-behavior-x:contain; scrollbar-width:none }
 .pond.scroll::-webkit-scrollbar{ display:none }
 .pond.scroll .stones{ justify-content:flex-start }
@@ -474,10 +482,10 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
 .mole.up.wrong{ animation:none; transform:translateY(48%); filter:grayscale(.85); opacity:.65; cursor:default }
 .mole.up.fade{ animation:none; transform:translateY(102%) }
 
-/* 당근 주기 — 정답 당근을 끌어서(또는 눌러서) 깡충이에게 */
+/* 당근 주기 — 정답 당근을 끌어서(또는 눌러서) 강토끼에게 */
 .feed{ width:100%; max-width:860px; flex:1 1 auto; min-height:0; display:flex; align-items:center; justify-content:center; gap:clamp(12px,4vw,44px) }
 .feed .bunny{ position:relative; flex:none; width:clamp(112px,26vw,260px); animation:idle 2.6s ease-in-out infinite }
-/* 당근을 끄는 동안 놓을 곳(깡충이)을 동그라미로 표시하고, 위에 오면 진하게 */
+/* 당근을 끄는 동안 놓을 곳(강토끼)을 동그라미로 표시하고, 위에 오면 진하게 */
 .feed .bunny::before{ content:""; position:absolute; left:4%; right:4%; top:8%; bottom:0; z-index:-1; border-radius:50%; border:4px dashed var(--carrot); opacity:0; transition:opacity .2s, background-color .2s; pointer-events:none }
 .feed .bunny.drop-ready::before{ opacity:.75 }
 .feed .bunny.drop-over::before{ opacity:1; border-style:solid; background-color:color-mix(in srgb, var(--carrot) 20%, transparent) }
@@ -596,7 +604,7 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
 @media (orientation: portrait){
   .bubble{ min-height:calc(2.7em + 24px); display:flex; align-items:center; justify-content:center }
 }
-/* 좁은 세로 화면: 당근은 깡충이 아래에, 두더지는 위 2마리·아래 1마리로 크게 */
+/* 좁은 세로 화면: 당근은 강토끼 아래에, 두더지는 위 2마리·아래 1마리로 크게 */
 @media (orientation: portrait) and (max-width: 600px){
   .feed{ flex-direction:column; gap:12px }
   .feed .bunny{ width:clamp(120px,36vw,170px) }
@@ -724,13 +732,14 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
       <button class="icon-btn round" id="parentBtn" type="button" aria-label="보호자 메뉴 (길게 누르기)">
         <svg class="ring" viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="27" pathLength="100"/></svg>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M10.03 4.66L10.39 1.83L13.61 1.83L13.97 4.66A7.6 7.6 0 0 1 15.80 5.42L18.05 3.67L20.33 5.95L18.58 8.20A7.6 7.6 0 0 1 19.34 10.03L22.17 10.39L22.17 13.61L19.34 13.97A7.6 7.6 0 0 1 18.58 15.80L20.33 18.05L18.05 20.33L15.80 18.58A7.6 7.6 0 0 1 13.97 19.34L13.61 22.17L10.39 22.17L10.03 19.34A7.6 7.6 0 0 1 8.20 18.58L5.95 20.33L3.67 18.05L5.42 15.80A7.6 7.6 0 0 1 4.66 13.97L1.83 13.61L1.83 10.39L4.66 10.03A7.6 7.6 0 0 1 5.42 8.20L3.67 5.95L5.95 3.67L8.20 5.42A7.6 7.6 0 0 1 10.03 4.66Z"/><circle cx="12" cy="12" r="3.2"/></svg>
+        <span class="hold-hint" id="holdHint" aria-hidden="true" hidden>길게 누르기</span>
       </button>
     </header>
     <div class="home-main">
       <div class="home-hero">
-        <button class="home-bunny bunny" id="homeBunny" type="button" aria-label="꽃무늬 귀 토끼인형 깡충이"><img src="assets/characters/floral-bunny-v1.png" width="1254" height="1254" alt="길게 늘어진 꽃무늬 귀와 분홍 코를 가진 토끼인형" draggable="false" fetchpriority="high"></button>
+        <button class="home-bunny bunny" id="homeBunny" type="button" aria-label="꽃무늬 귀 토끼인형 강토끼"><img src="assets/characters/floral-bunny-v1.png" width="1254" height="1254" alt="길게 늘어진 꽃무늬 귀와 분홍 코를 가진 토끼인형" draggable="false" fetchpriority="high"></button>
         <h1 class="title"><span class="hopword"><span>깡</span><span>충</span></span> 수학</h1>
-        <p class="tagline">깡충이랑 신나는 더하기 놀이</p>
+        <p class="tagline">강토끼랑 신나는 더하기 놀이</p>
         <p class="today-chip" id="todayChip">+2 더하기 · 10~19 · 5문제</p>
       </div>
       <div class="home-actions">
@@ -887,6 +896,7 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
         <p class="today-sum" id="parentSummary"></p>
         <button class="chip solid" id="toSetup" type="button">문제 정하기</button>
         <p class="muted" style="margin-top:10px">아이가 처음 화면에서 '놀이 시작'을 누르면 이 문제로 바로 시작해요.</p>
+        <p class="voice-prep" id="voicePrep" role="status" hidden></p>
       </section>
       <section class="panel">
         <h3>기록 저장</h3>
@@ -926,12 +936,19 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
         <h3>소리</h3>
         <div class="setting"><span class="label">목소리</span>
           <div class="chips" data-key="voice"><button class="chip" type="button" data-v="true">켜기</button><button class="chip" type="button" data-v="false">끄기</button></div></div>
+        <div class="setting"><span class="label">강토끼 목소리</span>
+          <div class="chips" id="engineChips" role="group" aria-label="강토끼 목소리"><button class="chip" type="button" data-engine="natural">로로 (자연스러운 목소리)</button><button class="chip" type="button" data-engine="device">기기 목소리</button></div></div>
+        <div class="setting device-only"><span class="label">목소리 높이</span>
+          <div class="chips" id="pitchChips" role="group" aria-label="목소리 높이"><button class="chip" type="button" data-pitch="normal">보통</button><button class="chip" type="button" data-pitch="high">강토끼</button><button class="chip" type="button" data-pitch="higher">아주 높게</button></div></div>
+        <div class="setting device-only" id="voicePickRow" hidden><label class="label" for="voicePick">목소리 종류</label>
+          <select class="select" id="voicePick"></select></div>
         <div class="setting"><span class="label">말 빠르기</span>
           <div class="chips" data-key="rate"><button class="chip" type="button" data-v="slow">천천히</button><button class="chip" type="button" data-v="normal">보통</button><button class="chip" type="button" data-v="fast">빠르게</button></div></div>
         <div class="setting"><span class="label">효과음</span>
           <div class="chips" data-key="sfx"><button class="chip" type="button" data-v="true">켜기</button><button class="chip" type="button" data-v="false">끄기</button></div></div>
         <button class="chip" id="voiceTest" type="button">목소리 들어 보기</button>
         <p class="voice-note" id="voiceNote"></p>
+        <p class="muted" id="voiceAbout" style="margin-top:6px"></p>
       </section>
       <section class="panel" id="kidsPanel" hidden>
         <h3>아이 <small>아이마다 별·스티커·기록·문제를 따로 모아요</small></h3>
@@ -954,7 +971,7 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
           <li>두 자리 수(@@+2)는 앞의 수를 '두 자리 10~99'로 고르세요. 사탕 상자가 열 개 묶음과 낱개로 나눠 보여 줘요.</li>
           <li>18+2, 29+3처럼 10을 넘어가는 문제가 특히 어려워요. '잘하는 것 · 어려운 것'에서 비율을 보고, 따로 연습하려면 '이것만'을 골라 보세요.</li>
           <li>학습지 문제를 그대로 내고 싶으면 '직접 만들기'에서 "11+2, 12+3"처럼 한꺼번에 붙여 넣으세요. 다시 연습할 문제만 모아서 낼 수도 있어요.</li>
-          <li>틀려도 벌점이 없어요. 깡충이가 같이 세어 주고, 처음에 틀린 문제는 다음 판에 더 자주 나와요.</li>
+          <li>틀려도 벌점이 없어요. 강토끼가 같이 세어 주고, 처음에 틀린 문제는 다음 판에 더 자주 나와요.</li>
         </ul>
       </section>
       <section class="panel">
@@ -1076,8 +1093,26 @@ function stickerArt(key, name) {
   // 안쪽 SVG가 그림 영역만 자르고, 바깥 SVG가 비율을 유지해 가운데에 배치합니다.
   return `<svg class="sticker-art" viewBox="0 0 ${width} ${height}" role="img" aria-label="${name} 스티커" focusable="false"><svg width="${width}" height="${height}" viewBox="${frame.join(' ')}" overflow="hidden"><image href="${STICKER_ATLAS}" width="1145" height="1374"/></svg></svg>`;
 }
+// 놀이에서 하는 말. 미리 받기(voiceLines)와 실제로 말하는 곳이 같은 함수를 씀
+const LINE = {
+  ask: (a, b) => `${a} 더하기 ${b}는 뭘까?`,
+  answer: (a, b, c) => `${a} 더하기 ${b}는 ${c}!`,
+  start: a => `${a}에서 시작!`,
+  hopIntro: (a, b) => `강토끼는 ${a}에 있어. ${native(b, true)} 번 깡충 뛰어 보자!`,
+  candyIntro: (a, c) => {
+    const tens = Math.floor(a / 10), ones = a % 10;
+    return tens >= 2 || c > 20
+      ? `열 개 묶음 ${cnt(tens, '개')}${ones ? `랑 낱개 ${cnt(ones, '개')}` : ''}, 모두 ${cnt(a, '개')}야. 보라 사탕을 넣어 보자!`
+      : `분홍 사탕이 ${cnt(a, '개')} 있어. 보라 사탕을 눌러서 상자에 넣어 보자!`;
+  },
+  candyHint: a => `분홍 사탕 ${native(a, true)} 개에서,`,
+  fishIntro: (a, b) => `통 안에 물고기가 ${cnt(a, '마리')} 있어. 보라 물고기를 ${cnt(b, '마리')} 잡아 보자!`,
+  fishHint: a => `통 안에 ${cnt(a, '마리')}에서,`,
+  rocketIntro: a => `로켓이 ${a}번 별에 있어. ${a} 다음 수를 찾아서 별을 차례로 눌러 봐!`,
+  rocketNext: (n, next) => `${n} 다음은 ${next}! 찾아 봐!`
+};
 const PRAISE = ['딩동댕!', '우와, 맞았어!', '최고야!', '정답이야!', '대단해!'];
-const OOPS = ['아까워! 깡충이랑 같이 세어 보자.', '괜찮아! 같이 세어 볼까?', '음~ 한 번 더 세어 보자.'];
+const OOPS = ['아까워! 강토끼랑 같이 세어 보자.', '괜찮아! 같이 세어 볼까?', '음~ 한 번 더 세어 보자.'];
 const ORDER = { modes: ['hop', 'candy', 'fish', 'rocket', 'balloon', 'mole', 'carrot'], addends: [1, 2, 3, 4, 5] };
 const MODE_NAMES = { hop: '징검다리', candy: '사탕 상자', fish: '물고기 잡기', rocket: '별 따라 로켓', balloon: '풍선 터뜨리기', mole: '두더지 잡기', carrot: '당근 주기' };
 const NEW_MODES = ['fish', 'rocket', 'mole', 'carrot'];   // 설정 버전 2에서 추가된 놀이
@@ -1168,24 +1203,40 @@ const cnt = (n, unit) => n <= 20 ? `${native(n, true)} ${unit}` : `${n}${unit}`;
 
 /* ================= 목소리 (Web Speech API) ================= */
 const synth = 'speechSynthesis' in window ? window.speechSynthesis : null;
-let koVoice = null, lastLine = '', onVoices = null;
+let koVoice = null, koVoices = [], lastLine = '', onVoices = null;
 const SPEED = { slow: .82, normal: 1, fast: 1.15 };   // 보호자가 고른 말 빠르기
+// 강토끼 목소리: 기기의 한국어 음성은 대부분 어른 목소리라 높여서 아이 캐릭터처럼 들리게 함.
+// 기기마다 들어 있는 목소리가 달라서 높이와 종류는 서버로 보내지 않고 이 기기에만 저장
+const VOICE_KEY = 'kkangchong-voice-v1';
+const PITCH = { normal: 1.05, high: 1.5, higher: 1.85 };
+let voicePref = readJSON(VOICE_KEY, {});
+if (!voicePref || typeof voicePref !== 'object') voicePref = {};
+if (!PITCH[voicePref.pitch]) voicePref.pitch = 'high';
+if (typeof voicePref.name !== 'string') voicePref.name = null;
+if (!['natural', 'device'].includes(voicePref.engine)) voicePref.engine = 'natural';
 function pickVoice() {
   if (!synth) return;
-  const ko = synth.getVoices().filter(v => /^ko/i.test(v.lang));
-  koVoice = ko.find(v => /yuna|유나|sora|heami|female|google/i.test(v.name)) || ko[0] || null;
+  koVoices = synth.getVoices().filter(v => /^ko/i.test(v.lang));
+  koVoice = koVoices.find(v => v.name === voicePref.name)
+    || koVoices.find(v => /yuna|유나|sora|heami|female|google/i.test(v.name)) || koVoices[0] || null;
   if (onVoices) onVoices();
 }
 if (synth) { pickVoice(); try { synth.addEventListener('voiceschanged', pickVoice); } catch (e) { synth.onvoiceschanged = pickVoice; } }
 const bubble = $('#bubble');
 function say(text, { interrupt = true, show = true, rate = 0.92, force = false } = {}) {
   if (show) { bubble.textContent = text; lastLine = text; bubble.classList.remove('fresh'); void bubble.offsetWidth; bubble.classList.add('fresh'); }
-  if (!synth || (!S().voice && !force)) return sleep(Math.min(2200, 500 + text.length * 55));
+  if (!S().voice && !force) return sleep(Math.min(2200, 500 + text.length * 55));
+  if (useNatural()) return sayNatural(text, interrupt, rate);
+  return speakDevice(text, { interrupt, rate });
+}
+// 기기에 들어 있는 한국어 음성으로 말하기 (자연스러운 목소리를 받을 수 없을 때 대신)
+function speakDevice(text, { interrupt = true, rate = 0.92 } = {}) {
+  if (!synth) return sleep(Math.min(2200, 500 + text.length * 55));
   const speed = SPEED[S().rate] || 1;
   return new Promise(resolve => {
     let done = false; const finish = () => { if (!done) { done = true; resolve(); } };
     const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'ko-KR'; if (koVoice) u.voice = koVoice; u.rate = rate * speed; u.pitch = 1.15;
+    u.lang = 'ko-KR'; if (koVoice) u.voice = koVoice; u.rate = rate * speed; u.pitch = PITCH[voicePref.pitch];
     u.onend = finish; u.onerror = finish;
     setTimeout(finish, (1500 + text.length * 200) / speed);
     try {
@@ -1194,7 +1245,95 @@ function say(text, { interrupt = true, show = true, rate = 0.92, force = false }
     } catch (e) { finish(); }
   });
 }
-const hush = () => { try { synth && synth.cancel(); } catch (e) {} };
+const hush = () => { stopVoice(); try { synth && synth.cancel(); } catch (e) {} };
+
+/* ---------- 강토끼 목소리: 타입캐스트 '로로'로 만든 음성 파일 ---------- */
+// 문장을 마침표·물음표·느낌표로 나눠 한 문장씩 서버(/api/tts)에서 받아 재생합니다.
+// "풍선을 콕 눌러 봐!" 같은 공통 문장은 한 번만 만들어지고, 받은 음성은 이 기기에 저장해 인터넷이 끊겨도 나옵니다.
+// 받을 수 없으면(인터넷 끊김, 이번 달 한도, 서버 설정 없음) 그 문장은 기기 목소리로 말합니다.
+const VOICE_CACHE = 'kkangchong-voice-v1';
+const TEMPO = { slow: '0.85', normal: '1', fast: '1.15' };
+const natural = { until: 0, why: '' };   // 서버가 음성을 줄 수 없다고 하면 10분 동안 기기 목소리로
+const useNatural = () => voicePref.engine !== 'device' && Date.now() >= natural.until && !!(window.AudioContext || window.webkitAudioContext);
+const sentences = text => text.replace(/([.!?])\s+/g, '$1\n').split('\n').map(t => t.trim()).filter(Boolean);
+const clipUrl = t => `/api/tts?t=${TEMPO[S().rate] || '1'}&text=${encodeURIComponent(t)}`;
+try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}   // 아이폰 무음 스위치와 관계없이 들리게
+const clips = new Map();   // 주소 → 디코딩한 음성 (Promise)
+const openVoiceBox = async () => { try { return await caches.open(VOICE_CACHE); } catch (e) { return null; } };
+// 서버에서 받아 이 기기에 저장 (서버는 처음 듣는 문장이면 만들어서 줌)
+async function fetchClip(url, box) {
+  const res = await fetch(url, { credentials: 'same-origin' });
+  if (!res.ok || !/^audio\//.test(res.headers.get('content-type') || '')) {
+    natural.why = res.status === 429 ? 'budget' : 'off';
+    natural.until = Date.now() + 10 * 60 * 1000;
+    if (current === 'parent') renderVoiceNote();
+    throw new Error('voice ' + res.status);
+  }
+  if (box) { try { await box.put(url, res.clone()); } catch (e) {} }
+  return res;
+}
+function loadClip(url) {
+  if (clips.has(url)) return clips.get(url);
+  const job = (async () => {
+    const box = await openVoiceBox();
+    let res = null;
+    if (box) { try { res = await box.match(url); } catch (e) {} }
+    if (!res) res = await fetchClip(url, box);
+    const data = await res.arrayBuffer(), ctx = sfx.audio();
+    return await new Promise((ok, no) => ctx.decodeAudioData(data, ok, no));
+  })();
+  clips.set(url, job);
+  job.catch(() => { if (clips.get(url) === job) clips.delete(url); });
+  if (clips.size > 150) clips.delete(clips.keys().next().value);
+  return job;
+}
+let voiceGen = 0, voiceSrc = null, voiceTail = Promise.resolve();
+function stopVoice() { voiceGen++; try { if (voiceSrc) voiceSrc.stop(); } catch (e) {} voiceSrc = null; voiceTail = Promise.resolve(); }
+function playClip(buffer, my) {
+  return new Promise(resolve => {
+    if (my !== voiceGen) { resolve(); return; }
+    const ctx = sfx.audio(), src = ctx.createBufferSource();
+    src.buffer = buffer; src.connect(ctx.destination);
+    let done = false;
+    const fin = () => { if (done) return; done = true; if (voiceSrc === src) voiceSrc = null; resolve(); };
+    src.onended = fin; setTimeout(fin, buffer.duration * 1000 + 600);
+    voiceSrc = src;
+    try { src.start(); } catch (e) { fin(); }
+  });
+}
+const withTimeout = (job, ms) => Promise.race([job, new Promise((_, no) => setTimeout(() => no(new Error('timeout')), ms))]);
+function sayNatural(text, interrupt, rate) {
+  if (interrupt) stopVoice();
+  const my = voiceGen, parts = sentences(text), jobs = parts.map(t => loadClip(clipUrl(t)));
+  jobs.forEach(j => j.catch(() => {}));
+  const run = async () => {
+    for (let k = 0; k < parts.length; k++) {
+      if (my !== voiceGen) return;
+      let buffer = null;
+      try { buffer = await withTimeout(jobs[k], 3500); } catch (e) {}
+      if (my !== voiceGen) return;
+      if (!buffer) { await speakDevice(parts.slice(k).join(' '), { interrupt: false, rate }); return; }   // 못 받은 문장부터는 기기 목소리
+      await playClip(buffer, my);
+    }
+  };
+  const job = (interrupt ? Promise.resolve() : voiceTail).then(run);
+  voiceTail = job.catch(() => {});
+  return job;
+}
+// 곧 할 말을 미리 받아 두기 (동시에 2개씩)
+const warmQueue = []; let warming = 0;
+function warmVoice(texts, { first = false } = {}) {
+  if (!S().voice || !useNatural()) return;
+  const urls = [...new Set(texts.flatMap(sentences).map(clipUrl))].filter(u => !clips.has(u));
+  const rest = warmQueue.filter(u => !urls.includes(u));
+  warmQueue.length = 0;
+  warmQueue.push(...(first ? [...urls, ...rest] : [...rest, ...urls]));   // 새 문제의 말은 남은 것보다 먼저
+  const next = () => {
+    if (!warmQueue.length || !useNatural()) { warming--; return; }
+    loadClip(warmQueue.shift()).catch(() => {}).finally(next);
+  };
+  while (warming < 2 && warmQueue.length) { warming++; next(); }
+}
 
 /* ================= 효과음 (Web Audio, 파일 없음) ================= */
 const sfx = {
@@ -1205,6 +1344,7 @@ const sfx = {
       if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
     } catch (e) {}
   },
+  audio() { this.wake(); return this.ctx; },
   note(f, t0, dur, { type = 'sine', vol = 0.16, to = null } = {}) {
     const c = this.ctx, now = c.currentTime + t0;
     const o = c.createOscillator(), g = c.createGain();
@@ -1267,6 +1407,7 @@ function tick() {
 const SCREENS = ['home', 'setup', 'play', 'reward', 'book', 'parent'];
 let current = 'home', gen = 0, round = null, cur = null, setupFrom = 'home';
 function show(id) {
+  if (current === 'setup' && id !== 'setup') setTimeout(prepareVoice, 400);   // 정한 문제의 목소리를 미리 만들기
   SCREENS.forEach(s => { $('#' + s).hidden = s !== id; });
   $$('.sheet').forEach(sh => { sh.hidden = true; });
   current = id;
@@ -1492,6 +1633,7 @@ document.addEventListener('click', e => {
   sfx.play('tap'); save();
   if (key === 'voice' || key === 'rate') updateReplay();
   if (key === 'rate') say('이 빠르기로 말할게!', { show: false, force: true });
+  if (key === 'rate' || (key === 'voice' && v)) setTimeout(prepareVoice, 1500);   // 빠르기가 바뀌면 새로 받아야 함
   if (current === 'setup') renderSetup(); else syncChips();
 });
 
@@ -1548,6 +1690,7 @@ function nextProblem() {
   const p = makeProblem();
   round.used.add(p.a + '+' + p.b); round.last = p.a + '+' + p.b;
   saveRound();
+  warmVoice(voiceLines({ ...p, c: p.a + p.b }, round.plan[round.i]), { first: true });
   const mode = round.plan[round.i], G = GAMES[mode];
   cur = { ...p, c: p.a + p.b, mode, first: true, done: false, locked: true, waiting: false, g, pond: null, fit: null };
   const play = $('#play'); play.dataset.mode = mode; play.classList.toggle('stage-ans', !G.skin);
@@ -1624,7 +1767,7 @@ async function choose(btn) {
     if (G.win) G.win(btn); else cheer();
     renderEquation(true); record(cur.first);
     round.i++; renderProgress(); saveRound();
-    await say(`${pick(PRAISE)} ${cur.a} 더하기 ${cur.b}는 ${cur.c}!`);
+    await say(`${pick(PRAISE)} ${LINE.answer(cur.a, cur.b, cur.c)}`);
     await sleep(450);
     if (alive(g)) nextProblem();
   } else {
@@ -1712,7 +1855,7 @@ async function setupHop(g) {
   const go = () => doHop(g);
   $('#hopBtn').addEventListener('click', go);
   cur.pond.el.addEventListener('click', go);
-  await say(`깡충이는 ${a}에 있어. ${native(b, true)} 번 깡충 뛰어 보자!`);
+  await say(LINE.hopIntro(a, b));
 }
 async function doHop(g) {
   if (!alive(g) || cur.mode !== 'hop' || cur.hopping || cur.hops >= cur.b) return;
@@ -1727,14 +1870,14 @@ async function doHop(g) {
     await sleep(750);
     if (!alive(g)) return;
     revealChoices();
-    say(`${cur.a} 더하기 ${cur.b}는 뭘까? 풍선을 콕 눌러 봐!`, { interrupt: false });
+    say(`${LINE.ask(cur.a, cur.b)} 풍선을 콕 눌러 봐!`, { interrupt: false });
   }
 }
 async function hintHop(g) {
   cur.pond.reset();
   $$('#stage .paw').forEach(p => p.classList.remove('on'));
   await sleep(300);
-  await say(`${cur.a}에서 시작!`, { show: false });
+  await say(LINE.start(cur.a), { show: false });
   for (let i = 0; i < cur.b; i++) {
     if (!alive(g)) return;
     const paw = $$('#stage .paw')[i]; if (paw) paw.classList.add('on');
@@ -1766,10 +1909,7 @@ async function setupCandy(g) {
   $('#stage').innerHTML = `<div class="candy-wrap"><div class="frames">${html}</div><div class="tray${b > 5 ? ' many' : ''}" id="tray">${tray}</div></div>`;
   cur.moved = 0;
   $('#tray').addEventListener('click', e => { const btn = e.target.closest('.candy'); if (btn) moveCandy(btn, g); });
-  const line = packMode
-    ? `열 개 묶음 ${cnt(tens, '개')}${ones ? `랑 낱개 ${cnt(ones, '개')}` : ''}, 모두 ${cnt(a, '개')}야. 보라 사탕을 넣어 보자!`
-    : `분홍 사탕이 ${cnt(a, '개')} 있어. 보라 사탕을 눌러서 상자에 넣어 보자!`;
-  await say(line);
+  await say(LINE.candyIntro(a, c));
 }
 function flyTo(fromEl, toEl, done, cls = '', html = '') {
   if (!fromEl || !toEl || reduceMotion || !fromEl.animate) { done(); return; }
@@ -1805,7 +1945,7 @@ async function moveCandy(btn, g) {
 async function hintCandy(g) {
   const glow = $$('#stage .pack, #stage .slot.berry');
   glow.forEach(s => { s.classList.remove('glow'); void s.offsetWidth; s.classList.add('glow'); });
-  await say(`분홍 사탕 ${native(cur.a, true)} 개에서,`, { show: false });
+  await say(LINE.candyHint(cur.a), { show: false });
   for (let i = 0; i < cur.b; i++) {
     if (!alive(g)) return;
     const s = $(`#stage .slot[data-i="${cur.a + i}"]`); if (!s) continue;
@@ -1820,7 +1960,7 @@ async function hintCandy(g) {
 async function setupBalloon(g) {
   $('#stage').innerHTML = `<div class="sky-stage"><span class="cloud c1"></span><span class="cloud c2"></span><div class="bunny mini">${bunnyArt('balloon')}</div></div>`;
   revealChoices();
-  await say(`${cur.a} 더하기 ${cur.b}는 뭘까? 맞는 풍선을 터뜨려 봐!`);
+  await say(`${LINE.ask(cur.a, cur.b)} 맞는 풍선을 터뜨려 봐!`);
 }
 async function hintBalloon(g) {
   const stage = $('#stage'); stage.innerHTML = '';
@@ -1859,7 +1999,7 @@ async function setupFish(g) {
   const grab = e => { const f = e.target.closest('.fish'); if (f) { e.preventDefault(); catchFish(f, g); } };
   sea.addEventListener('pointerdown', grab);
   sea.addEventListener('click', grab);
-  await say(`통 안에 물고기가 ${cnt(a, '마리')} 있어. 보라 물고기를 ${cnt(b, '마리')} 잡아 보자!`);
+  await say(LINE.fishIntro(a, b));
 }
 async function catchFish(btn, g) {
   if (!alive(g) || cur.mode !== 'fish' || btn.disabled || cur.moved >= cur.b) return;
@@ -1881,7 +2021,7 @@ async function catchFish(btn, g) {
 }
 async function hintFish(g) {
   pulse($('#stage .pail'));
-  await say(`통 안에 ${cnt(cur.a, '마리')}에서,`, { show: false });
+  await say(LINE.fishHint(cur.a), { show: false });
   for (let i = 0; i < cur.b; i++) {
     if (!alive(g)) return;
     pulse($$('#stage .cf')[i], 'count'); sfx.play('tap');
@@ -1918,7 +2058,7 @@ async function setupRocket(g) {
   cur.fit = () => placeRocket(false);
   placeRocket(false); requestAnimationFrame(() => placeRocket(false));
   $('#space').addEventListener('click', e => { const s = e.target.closest('.star-btn'); if (s) tapStar(s, g); });
-  await say(`로켓이 ${a}번 별에 있어. ${a} 다음 수를 찾아서 별을 차례로 눌러 봐!`);
+  await say(LINE.rocketIntro(a));
 }
 function starCenter(n) {
   const sp = $('#space'), s = sp && sp.querySelector(`.star-btn[data-n="${n}"]`); if (!s) return null;
@@ -1958,7 +2098,7 @@ async function tapStar(s, g) {
   if (s.classList.contains('lit')) { pulse(s, 'nudge'); return; }
   if (n !== next) {           // 다른 수를 눌렀을 때: 벌점 없이 다음 수를 알려 줌
     pulse(s, 'nudge'); sfx.play('tap');
-    if (Date.now() - (cur.nudgedAt || 0) > 1800) { cur.nudgedAt = Date.now(); say(`${cur.pos} 다음은 ${next}! 찾아 봐!`, { show: false }); }
+    if (Date.now() - (cur.nudgedAt || 0) > 1800) { cur.nudgedAt = Date.now(); say(LINE.rocketNext(cur.pos, next), { show: false }); }
     return;
   }
   cur.flying = true; cur.pos = n; cur.path.push(n); s.classList.add('lit');
@@ -1971,7 +2111,7 @@ async function tapStar(s, g) {
     await sleep(500);
     if (!alive(g)) return;
     revealChoices();
-    say(`${cur.a} 더하기 ${cur.b}는 뭘까? 행성을 콕 눌러 봐!`, { interrupt: false });
+    say(`${LINE.ask(cur.a, cur.b)} 행성을 콕 눌러 봐!`, { interrupt: false });
   }
 }
 async function hintRocket(g) {
@@ -1979,7 +2119,7 @@ async function hintRocket(g) {
   $$('#space .star-btn.lit:not(.start)').forEach(s => s.classList.remove('lit'));
   placeRocket(false);
   await sleep(300);
-  await say(`${cur.a}에서 시작!`, { show: false });
+  await say(LINE.start(cur.a), { show: false });
   for (let n = cur.a + 1; n <= cur.c; n++) {
     if (!alive(g)) return;
     const s = $(`#space .star-btn[data-n="${n}"]`); if (!s) continue;
@@ -2011,17 +2151,17 @@ async function setupMole(g) {
   }
   setTimeout(() => moles.forEach(m => m.classList.add('peek')), 700);
   cur.locked = false;
-  await say(`${cur.a} 더하기 ${cur.b}는 뭘까? 맞는 두더지를 콩! 잡아 봐!`);
+  await say(`${LINE.ask(cur.a, cur.b)} 맞는 두더지를 콩! 잡아 봐!`);
 }
 
-/* ---------- 놀이 7: 당근 주기 (정답 당근을 끌어서 깡충이 입에) ---------- */
+/* ---------- 놀이 7: 당근 주기 (정답 당근을 끌어서 강토끼 입에) ---------- */
 const CARROT_SVG = `<svg viewBox="0 0 60 96" aria-hidden="true"><path class="c-leaf" d="M30 27 C24 15 17 9 9 7 C17 15 21 21 25 29 Z M30 27 C30 13 32 6 36 1 C37 11 35 19 33 28 Z M31 28 C38 17 45 12 54 11 C46 19 40 24 34 30 Z"/><path class="c-body" d="M8 33 C8 24 52 24 52 33 C52 53 39 80 30 94 C21 80 8 53 8 33 Z"/></svg>`;
 async function setupCarrot(g) {
   const opts = makeOptions();
   $('#stage').innerHTML = `${GHOST_STRIP}<div class="feed"><div class="bunny" id="eater">${bunnyArt('carrot')}</div><div class="basket">${opts.map((v, i) => `<button class="ans carrot${String(v).length > 2 ? ' d3' : ''}" data-own="" type="button" data-v="${v}" style="--i:${i}" aria-label="당근 ${v}">${CARROT_SVG}<span>${v}</span></button>`).join('')}</div></div>`;
   cur.waiting = false; cur.locked = false;
   $$('#stage .carrot').forEach(btn => enableDrag(btn, g));
-  await say(`깡충이가 배고프대! ${cur.a} 더하기 ${cur.b}는 뭘까? 맞는 당근을 깡충이에게 쏙 넣어 줘!`);
+  await say(`강토끼가 배고프대! ${LINE.ask(cur.a, cur.b)} 맞는 당근을 강토끼에게 쏙 넣어 줘!`);
 }
 function setCarrot(btn, tx, ty, sc = 1) { btn._tx = tx; btn._ty = ty; btn.style.translate = `${tx}px ${ty}px`; btn.style.scale = sc === 1 ? '' : String(sc); }
 function springBack(btn) { btn.classList.add('back'); setCarrot(btn, 0, 0); setTimeout(() => btn.classList.remove('back'), 420); }
@@ -2103,7 +2243,7 @@ async function hintStrip(g) {
   $$('.strip', stage).forEach(s => s.remove());
   stage.insertAdjacentHTML('afterbegin', `<div class="strip" aria-hidden="true"><b>${cur.a}</b></div>`);
   const strip = $('.strip', stage);
-  await say(`${cur.a}에서 시작!`, { show: false });
+  await say(LINE.start(cur.a), { show: false });
   for (let i = 1; i <= cur.b; i++) {
     if (!alive(g)) return;
     strip.insertAdjacentHTML('beforeend', `<i>›</i><b class="nx">${cur.a + i}</b>`);
@@ -2123,6 +2263,76 @@ const GAMES = {
   mole:    { skin: null,      setup: setupMole,    hint: hintStrip,   hitSfx: 'bonk' },
   carrot:  { skin: null,      setup: setupCarrot,  hint: hintStrip,   win: winCarrot }
 };
+
+// 이 문제에서 강토끼가 할 말 (공통 문장은 앱을 열 때 한 번 받아 둠)
+// 말하는 순서대로: 첫마디 → 이어 세기 → 묻기·정답 → 틀렸을 때
+function voiceLines({ a, b, c }, mode) {
+  const first = { hop: LINE.hopIntro(a, b), candy: LINE.candyIntro(a, c), fish: LINE.fishIntro(a, b), rocket: LINE.rocketIntro(a) }[mode] || LINE.ask(a, b);
+  const words = mode === 'candy' || mode === 'fish', counts = [];
+  for (let n = a + 1; n <= c; n++) counts.push(`${words ? countWord(n, c) : n}!`);
+  const later = [LINE.ask(a, b), LINE.answer(a, b, c), LINE.start(a)];
+  if (mode === 'candy') later.push(LINE.candyHint(a));
+  if (mode === 'fish') later.push(LINE.fishHint(a));
+  if (mode === 'rocket') for (let n = a; n < c; n++) later.push(LINE.rocketNext(n, n + 1));
+  return [first, ...counts, ...later];
+}
+
+/* 2번: 보호자가 문제를 정하면 그 문제·놀이에서 할 말을 미리 만들어 둠 (아이가 기다리지 않게) */
+const PREP_CAP = 3000;   // 한 번에 새로 받을 최대 글자 수 (월 무료 한도 보호). 남은 것은 놀면서 받음
+let prep = { gen: 0, total: 0, ready: 0, running: false, capped: false };
+function problemPool(s) {
+  if (s.source === 'custom') return s.custom.map(([a, b]) => ({ a, b, c: a + b }));
+  const weak = new Set(Object.keys(state.missed)), pool = buildPool(s).map(([a, b]) => ({ a, b, c: a + b }));
+  const isWeak = q => weak.has(q.a + '+' + q.b);
+  return [...pool.filter(isWeak), ...pool.filter(q => !isWeak(q))];   // 다시 연습할 문제가 먼저 나오기 쉬우니 먼저
+}
+async function prepareVoice() {
+  const my = ++prep.gen;
+  if (!S().voice || !useNatural()) { prep = { gen: my, total: 0, ready: 0, running: false, capped: false }; renderPrep(); return; }
+  const s = S(), list = [];
+  for (const q of problemPool(s)) for (const m of s.modes) for (const t of voiceLines(q, m).flatMap(sentences)) list.push(t);
+  const unique = [...new Set(list)], box = await openVoiceBox(), todo = [];
+  let ready = 0, chars = 0, capped = false;
+  for (const t of unique) {
+    const u = clipUrl(t);
+    let have = clips.has(u);
+    if (!have && box) { try { have = !!(await box.match(u)); } catch (e) {} }
+    if (have) { ready++; continue; }
+    if (chars + t.length > PREP_CAP) { capped = true; continue; }
+    chars += t.length; todo.push(u);
+  }
+  if (my !== prep.gen) return;
+  prep = { gen: my, total: unique.length, ready, running: todo.length > 0, capped };
+  renderPrep();
+  // 놀이 중에는 한 줄씩, 지금 필요한 말(warmVoice)이 받는 동안은 기다림
+  let next = 0;
+  const worker = async lane => {
+    while (next < todo.length) {
+      if (my !== prep.gen || !useNatural() || !S().voice) return;
+      if (warming > 0 || (lane > 0 && current === 'play')) { await sleep(300); continue; }
+      const u = todo[next++];
+      if (clips.has(u)) { prep.ready++; renderPrep(); continue; }
+      try { await fetchClip(u, box); if (my === prep.gen) prep.ready++; } catch (e) {}
+      if (my === prep.gen) renderPrep();
+    }
+  };
+  await Promise.all([worker(0), worker(1)]);
+  if (my === prep.gen) { prep.running = false; renderPrep(); }
+}
+function renderPrep() {
+  const el = $('#voicePrep');
+  el.hidden = !prep.total || !S().voice || voicePref.engine === 'device';
+  if (el.hidden) return;
+  const pct = Math.round(prep.ready / prep.total * 100);
+  const text = prep.running ? `강토끼 목소리 준비 중 ${prep.ready}/${prep.total}`
+    : prep.ready >= prep.total ? `강토끼 목소리 준비 끝 (${prep.total}문장)`
+    : prep.capped ? `강토끼 목소리 ${prep.ready}/${prep.total} 준비. 나머지는 놀면서 받아요`
+    : `강토끼 목소리 ${prep.ready}/${prep.total} 준비. 인터넷이 연결되면 나머지를 받아요`;
+  el.innerHTML = `<span class="bar3" aria-hidden="true"><i style="width:${pct}%"></i></span><span>${text}</span>`;
+}
+const COMMON_LINES = [...PRAISE, ...OOPS, '다시 골라 볼까?', '풍선을 콕 눌러 봐!', '맞는 풍선을 터뜨려 봐!', '행성을 콕 눌러 봐!',
+  '맞는 두더지를 콩! 잡아 봐!', '강토끼가 배고프대! 맞는 당근을 강토끼에게 쏙 넣어 줘!', '사탕은 모두 몇 개일까?', '물고기는 모두 몇 마리일까?',
+  '그만할까?', '안녕! 나는 강토끼야. 같이 더하기 놀이 할래?', ...Object.values(GAMES).map(G => G.nudge).filter(Boolean)];
 
 /* ================= 선물 ================= */
 let gifted = false;
@@ -2153,6 +2363,7 @@ $('#gifts').addEventListener('click', async e => {
   sfx.play('open');
   const fresh = STICKERS.filter(([em]) => !state.stickers[em]);
   const [em, name] = pick(fresh.length ? fresh : STICKERS);
+  warmVoice([`와! ${name} 스티커야!`]);
   const isNew = !state.stickers[em];
   state.stickers[em] = (state.stickers[em] || 0) + 1; save({ type: 'sticker', sticker: em });
   await sleep(650);
@@ -2234,7 +2445,7 @@ function renderParent() {
   $('#statToday').textContent = t.solved;
   $('#statFirst').textContent = t.solved ? Math.round(Math.min(t.first, t.solved) / t.solved * 100) + '%' : '–';
   $('#statRounds').textContent = t.rounds;
-  renderChart(); renderMeters(); renderKids(); renderSyncTime(); renderVoiceNote();
+  renderChart(); renderMeters(); renderKids(); renderSyncTime(); renderVoiceNote(); loadVoiceStatus(); renderPrep();
   const ki = kids.findIndex(k => k.id === child);
   $('#resetText').textContent = (kids.length > 1 && ki >= 0 ? `${kidLabel(kids[ki], ki)}의 ` : '') + '별, 스티커, 풀이 기록을 연결된 모든 기기에서 지워요. 문제 설정은 그대로 남아요. 인터넷 연결이 끊겨 있으면 다시 연결될 때 반영돼요.';
   const weak = Object.entries(state.missed).sort((x, y) => y[1] - x[1]).slice(0, 12);
@@ -2366,16 +2577,59 @@ function renderSyncTime() {
   el.textContent = parts.join(' · '); el.hidden = !parts.length;
 }
 // 목소리 점검: 한국어 목소리가 없는 기기는 알려 줌
+let voiceStatus = null;   // 서버가 알려 준 이번 달 사용량
+function loadVoiceStatus() {
+  fetch('/api/tts', { credentials: 'same-origin', cache: 'no-store' })
+    .then(r => r.ok && /json/.test(r.headers.get('content-type') || '') ? r.json() : null)
+    .then(d => { voiceStatus = d; }, () => { voiceStatus = null; })
+    .then(() => { if (current === 'parent') renderVoiceNote(); });
+}
 function renderVoiceNote() {
-  const el = $('#voiceNote'); let text, warn = true;
-  if (!synth) text = '이 브라우저는 목소리 읽기를 지원하지 않아요. 글자와 효과음으로 진행돼요.';
+  const el = $('#voiceNote'), nat = voicePref.engine !== 'device';
+  $('#parent').dataset.engine = nat ? 'natural' : 'device';
+  $$('#engineChips .chip').forEach(c => c.setAttribute('aria-pressed', String(c.dataset.engine === voicePref.engine)));
+  let text, warn = true;
+  if (nat && Date.now() < natural.until) text = natural.why === 'budget'
+    ? '이번 달 자연스러운 목소리 사용량을 다 써서 기기 목소리로 말하고 있어요. 이미 들은 문장은 계속 로로 목소리로 나와요.'
+    : '지금은 자연스러운 목소리를 받을 수 없어서 기기 목소리로 말하고 있어요. 인터넷 연결을 확인해 주세요.';
+  else if (nat && voiceStatus && voiceStatus.enabled === false) text = '서버에 목소리 설정이 없어서 기기 목소리로 말해요.';
+  else if (nat) { text = '타입캐스트 로로 목소리로 말해요.' + (voiceStatus && voiceStatus.limit ? ` 이번 달 ${voiceStatus.used.toLocaleString('ko-KR')} / ${voiceStatus.limit.toLocaleString('ko-KR')}자 사용.` : ''); warn = false; }
+  else if (!synth) text = '이 브라우저는 목소리 읽기를 지원하지 않아요. 글자와 효과음으로 진행돼요.';
   else if (!koVoice) text = '이 기기에서 한국어 목소리를 찾지 못했어요. 기기 설정에서 한국어 음성(TTS)을 내려받으면 자연스럽게 읽어요.';
   else { text = `쓰는 목소리: ${koVoice.name}`; warn = false; }
   el.textContent = text; el.classList.toggle('warn', warn);
-  $('#voiceTest').disabled = !synth;
+  $('#voiceAbout').textContent = nat
+    ? '음성: Typecast(로로). 문장마다 처음 한 번만 만들고, 들은 문장은 이 기기에 저장해 인터넷이 끊겨도 나와요. 이 선택은 이 기기에만 저장돼요.'
+    : '이 기기에 들어 있는 한국어 음성을 높여서 강토끼처럼 들리게 해요. 기기마다 들어 있는 목소리가 달라서 높이와 종류는 이 기기에만 저장돼요.';
+  $('#voiceTest').disabled = !nat && !synth;
+  $$('#pitchChips .chip').forEach(c => { c.setAttribute('aria-pressed', String(c.dataset.pitch === voicePref.pitch)); c.disabled = !synth; });
+  // 한국어 목소리가 두 개 이상인 기기에서만 종류를 고르게 함
+  const row = $('#voicePickRow'), sel = $('#voicePick');
+  row.hidden = koVoices.length < 2;
+  if (!row.hidden && document.activeElement !== sel) {
+    sel.innerHTML = '<option value="">자동으로 고르기</option>' + koVoices.map(v => `<option value="${esc(v.name)}">${esc(v.name)}</option>`).join('');
+    sel.value = koVoices.some(v => v.name === voicePref.name) ? voicePref.name : '';
+  }
 }
 onVoices = () => { if (current === 'parent') renderVoiceNote(); };
-$('#voiceTest').addEventListener('click', () => { say('안녕! 나는 깡충이야. 18 더하기 2는 20!', { show: false, force: true }); });
+const VOICE_SAMPLE = '안녕! 나는 강토끼야. 18 더하기 2는 20!';
+$('#voiceTest').addEventListener('click', () => { say(VOICE_SAMPLE, { show: false, force: true }); });
+$('#engineChips').addEventListener('click', e => {
+  const c = e.target.closest('[data-engine]'); if (!c) return;
+  voicePref.engine = c.dataset.engine; writeJSON(VOICE_KEY, voicePref);
+  setTimeout(prepareVoice, 1500); renderPrep();
+  if (voicePref.engine === 'natural') natural.until = 0;   // 다시 시도
+  hush(); renderVoiceNote(); updateReplay(); say(VOICE_SAMPLE, { show: false, force: true });
+});
+$('#pitchChips').addEventListener('click', e => {
+  const c = e.target.closest('[data-pitch]'); if (!c) return;
+  voicePref.pitch = c.dataset.pitch; writeJSON(VOICE_KEY, voicePref);
+  renderVoiceNote(); say(VOICE_SAMPLE, { show: false, force: true });
+});
+$('#voicePick').addEventListener('change', e => {
+  voicePref.name = e.target.value || null; writeJSON(VOICE_KEY, voicePref);
+  pickVoice(); renderVoiceNote(); say(VOICE_SAMPLE, { show: false, force: true });
+});
 $('#toSetup').addEventListener('click', () => { sfx.play('tap'); setupFrom = 'parent'; show('setup'); });
 $('#resetAsk').addEventListener('click', () => { $('#resetAsk').hidden = true; $('#resetConfirm').hidden = false; });
 $('#resetNo').addEventListener('click', () => { $('#resetAsk').hidden = false; $('#resetConfirm').hidden = true; });
@@ -2384,8 +2638,13 @@ $('#resetYes').addEventListener('click', () => {
   renderParent(); toast('기록을 지웠어요');
 });
 
-/* 보호자용 버튼: 1.5초 길게 눌러야 열림 (아이가 실수로 못 들어가게) */
-function holdable(el, onDone, tip, ms = 1500) {
+/* 보호자용 버튼: 0.8초 누르고 있어야 열림. 보호자는 거의 바로 열리고, 아이가 마구 두드리는 것은 막음 */
+const HOLD_MS = 800;
+document.documentElement.style.setProperty('--hold-time', HOLD_MS + 'ms');   // 채워지는 동그라미·밑줄도 같은 시간
+const HINT_KEY = 'kkangchong-hold-hint-v1';   // 이 기기에서 보호자 메뉴를 연 횟수 (3번까지 안내를 보여 줌)
+const holdOpens = () => Math.max(0, +readJSON(HINT_KEY, 0) || 0);
+function renderHoldHint() { $('#holdHint').hidden = holdOpens() >= 3; }
+function holdable(el, onDone, tip, ms = HOLD_MS) {
   let t = 0;
   const start = e => {
     if (e && e.cancelable) e.preventDefault();
@@ -2399,7 +2658,8 @@ function holdable(el, onDone, tip, ms = 1500) {
   el.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) start(e); });
   el.addEventListener('keyup', e => { if (e.key === 'Enter' || e.key === ' ') end(); });
 }
-holdable($('#parentBtn'), () => show('parent'), '보호자 메뉴는 톱니바퀴를 길게 눌러 주세요');
+holdable($('#parentBtn'), () => { writeJSON(HINT_KEY, holdOpens() + 1); renderHoldHint(); show('parent'); }, '보호자 메뉴는 톱니바퀴를 길게 눌러 주세요');
+renderHoldHint();
 holdable($('#rewardSetup'), () => { hush(); setupFrom = 'home'; show('setup'); }, '문제 바꾸기는 보호자가 길게 눌러 주세요');
 
 /* ================= 버튼 연결 ================= */
@@ -2416,7 +2676,7 @@ $('#parentBack').addEventListener('click', () => show('home'));
 $('#replayBtn').addEventListener('click', () => { if (lastLine) say(lastLine, { show: false }); });
 // 목소리를 끄거나 목소리 기능이 없으면 '다시 듣기'는 아무 일도 못 하므로 감춤
 function updateReplay() {
-  const b = $('#replayBtn'), ok = !!synth && S().voice;
+  const b = $('#replayBtn'), ok = S().voice && (useNatural() || !!synth);
   b.classList.toggle('invisible', !ok); b.disabled = !ok;
   if (ok) b.removeAttribute('aria-hidden'); else b.setAttribute('aria-hidden', 'true');
 }
@@ -2425,7 +2685,7 @@ $('#homeBunny').addEventListener('click', () => {
   sfx.wake(); sfx.play('hop');
   const b = $('#homeBunny'); b.classList.remove('jump'); void b.offsetWidth; b.classList.add('jump');
   setTimeout(() => b.classList.remove('jump'), 500);
-  say('안녕! 나는 깡충이야. 같이 더하기 놀이 할래?', { show: false });
+  say('안녕! 나는 강토끼야. 같이 더하기 놀이 할래?', { show: false });
 });
 addEventListener('resize', () => {
   sizeFx();
@@ -2480,6 +2740,8 @@ if (window.KkangchongSync) {
 }
 $('#syncNow').addEventListener('click', () => { if (sync) sync.flush(); });
 renderKidChip();
+setTimeout(() => warmVoice(COMMON_LINES), 1500);   // 자주 하는 말은 앱을 열 때 미리 받아 둠
+setTimeout(prepareVoice, 4000);                     // 지금 정해진 문제의 말도 (이미 받은 것은 건너뜀)
 if ('serviceWorker' in navigator && document.querySelector('link[rel="manifest"]')) {
   addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
 }

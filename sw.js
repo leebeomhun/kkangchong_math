@@ -1,8 +1,9 @@
 // 깡충 수학 서비스 워커: 앱 파일을 캐시해 두고 인터넷 없이도 실행되게 합니다.
 // index.html 등을 고친 뒤 배포할 때는 VERSION 숫자를 올려 주세요.
-const VERSION = 'v12';
+const VERSION = 'v17';
 const APP_CACHE = `kkangchong-app-${VERSION}`;
 const FONT_CACHE = 'kkangchong-fonts';
+const VOICE_CACHE = 'kkangchong-voice-v1';   // 앱이 저장한 강토끼 목소리 (버전을 올려도 지우지 않음)
 const ASSETS = [
   './',
   './index.html',
@@ -35,7 +36,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== APP_CACHE && k !== FONT_CACHE).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k !== APP_CACHE && k !== FONT_CACHE && k !== VOICE_CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });

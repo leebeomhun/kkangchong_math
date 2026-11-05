@@ -7,3 +7,7 @@ __pycache__/
 
 # 이 컴퓨터에서만 쓰는 Claude Code 설정
 .claude/settings.local.json
+
+# API 키 등 비밀값: 절대 저장소에 올리지 않습니다.
+.env
+.env.*

@@ -14,6 +14,8 @@ from contextlib import contextmanager
 from datetime import date, datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlsplit
+
+from voice import BadText, VoiceBudget, VoiceUnavailable, from_env
 from pathlib import Path
 
 STICKERS = ['🐶','🐱','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐷','🐸','🐧','🐥','🦄','🐳','🐬','🦋','🐞','🌈','🌸','🌻','🍓','🍒','🍰','🧁','🍭','🍦','🎀','👑','💎',
@@ -342,8 +344,8 @@ class Store:
 class SyncServer(ThreadingHTTPServer):
     daemon_threads = True
 
-    def __init__(self, address, store, token, origin, handler=None):
-        self.store, self.token, self.origin = store, token, origin
+    def __init__(self, address, store, token, origin, handler=None, voice=None):
+        self.store, self.token, self.origin, self.voice = store, token, origin, voice
         super().__init__(address, handler or Handler)
 
 
@@ -363,7 +365,7 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(payload)
 
     def authorize(self):
-        if urlsplit(self.path).path != '/api/sync':
+        if urlsplit(self.path).path not in ('/api/sync', '/api/tts'):
             self.reply(404, dict(error='Not found'))
             return False
         if not hmac.compare_digest(self.headers.get('X-Kkangchong-Token', ''), self.server.token):
@@ -376,17 +378,53 @@ class Handler(BaseHTTPRequestHandler):
         return True
 
     def do_GET(self):
-        if self.authorize():
-            child = parse_qs(urlsplit(self.path).query).get('child', [MAIN_CHILD])[0]
-            try:
-                self.reply(200, self.server.store.snapshot(child))
-            except UnknownChild:
-                self.reply(410, dict(error='Unknown child'))
-            except sqlite3.Error:
-                self.reply(503, dict(error='Storage unavailable'))
+        if not self.authorize():
+            return
+        url = urlsplit(self.path)
+        if url.path == '/api/tts':
+            self.speak(parse_qs(url.query))
+            return
+        child = parse_qs(url.query).get('child', [MAIN_CHILD])[0]
+        try:
+            self.reply(200, self.server.store.snapshot(child))
+        except UnknownChild:
+            self.reply(410, dict(error='Unknown child'))
+        except sqlite3.Error:
+            self.reply(503, dict(error='Storage unavailable'))
+
+    def speak(self, params):
+        """GET /api/tts → 이번 달 사용량, GET /api/tts?text=...&t=1 → 문장 mp3 (처음이면 만들고 저장)."""
+        voice = self.server.voice
+        if 'text' not in params:
+            self.reply(200, voice.status() if voice else dict(enabled=False))
+            return
+        if not voice:
+            self.reply(503, dict(error='Voice is not configured'))
+            return
+        try:
+            audio = voice.clip(params['text'][0], params.get('t', ['1'])[0])
+        except BadText:
+            self.reply(400, dict(error='Unsupported text'))
+            return
+        except VoiceBudget:
+            self.reply(429, dict(error='Monthly voice limit reached'))
+            return
+        except (VoiceUnavailable, OSError):
+            self.reply(503, dict(error='Voice unavailable'))
+            return
+        self.send_response(200)
+        self.send_header('Content-Type', 'audio/mpeg')
+        self.send_header('Cache-Control', 'private, max-age=31536000, immutable')
+        self.send_header('X-Content-Type-Options', 'nosniff')
+        self.send_header('Content-Length', str(len(audio)))
+        self.end_headers()
+        self.wfile.write(audio)
 
     def do_POST(self):
         if not self.authorize():
+            return
+        if urlsplit(self.path).path != '/api/sync':
+            self.reply(405, dict(error='Method not allowed'))
             return
         if self.headers.get('Content-Type', '').split(';')[0].strip() != 'application/json':
             self.reply(415, dict(error='Expected JSON'))
@@ -418,9 +456,11 @@ def main():
     if len(token) < 32:
         raise RuntimeError('Private proxy token is missing')
     store = Store(data / 'progress.sqlite3')
+    # 강토끼 목소리: 키는 웹 폴더의 .env(nginx가 점 파일을 막음) 또는 KK_TTS_ENV_FILE에서 읽음
+    voice = from_env(data / 'tts', os.environ.get('KK_TTS_ENV_FILE', str(Path(__file__).resolve().parents[1] / '.env')))
     server = SyncServer(('127.0.0.1', int(os.environ.get('KK_SYNC_PORT', '8871'))), store, token,
-                        os.environ.get('KK_SYNC_ORIGIN', 'https://aiedu.codesearch.ai.kr'))
-    print(f'Progress sync listening on 127.0.0.1:{server.server_port}', flush=True)
+                        os.environ.get('KK_SYNC_ORIGIN', 'https://aiedu.codesearch.ai.kr'), voice=voice)
+    print(f'Progress sync listening on 127.0.0.1:{server.server_port} (voice {"on" if voice.enabled else "off"})', flush=True)
     server.serve_forever()
 
 
