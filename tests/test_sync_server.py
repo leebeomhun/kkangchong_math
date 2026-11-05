@@ -10,7 +10,7 @@ import uuid
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'server'))
-from sync_server import Invalid, Store, SyncServer, empty_state
+from sync_server import Invalid, Store, SyncServer, UnknownChild, empty_state
 
 
 def event(kind='answer', **extra):
@@ -112,6 +112,67 @@ class StoreTests(unittest.TestCase):
         self.assertEqual(state['missed'], {'1+1': 1})
         self.assertEqual(state['log']['2026-11-05'], dict(solved=3, first=1, rounds=1))
 
+    def test_answer_stats_split_by_carry_addend_and_mode(self):
+        self.send(event(a=18, b=2, first=True, mode='hop'), event(a=18, b=2, first=False, mode='hop'),
+                  event(a=11, b=3, first=True, mode='mole'), event(a=5, b=2, first=True))
+        row = self.store.snapshot()['state']['stats']['2026-11-05']
+        self.assertEqual(row['carry'], [2, 1])
+        self.assertEqual(row['plain'], [2, 2])
+        self.assertEqual(row['add'], {'2': [3, 2], '3': [1, 1]})
+        self.assertEqual(row['mode'], {'hop': [2, 1], 'mole': [1, 1]})
+        with self.assertRaises(Invalid):
+            self.send(event(mode='unknown'))
+
+    def test_old_state_without_stats_still_accepts_answers(self):
+        with self.store.connect() as db:
+            data = json.loads(db.execute('SELECT data FROM profile WHERE id=1').fetchone()[0])
+            del data['state']['stats']
+            db.execute('UPDATE profile SET data=? WHERE id=1', (json.dumps(data),))
+        self.send(event(a=9, b=1, mode='fish'))
+        self.assertEqual(self.store.snapshot()['state']['stats']['2026-11-05']['carry'], [1, 1])
+
+    def test_records_from_older_versions_get_new_defaults(self):
+        with self.store.connect() as db:
+            data = json.loads(db.execute('SELECT data FROM profile WHERE id=1').fetchone()[0])
+            del data['state']['settings']['rate']; del data['state']['stats']
+            data['state']['settings']['count'] = 7
+            db.execute('UPDATE profile SET data=? WHERE id=1', (json.dumps(data),))
+        state = self.store.snapshot()['state']
+        self.assertEqual((state['settings']['rate'], state['settings']['count'], state['stats']), ('normal', 7, {}))
+
+    def test_rate_setting_is_validated(self):
+        self.send(event('settings', patch={'rate': 'slow'}))
+        self.assertEqual(self.store.snapshot()['state']['settings']['rate'], 'slow')
+        self.send(event('settings', patch={'rate': 'warp'}))
+        self.assertEqual(self.store.snapshot()['state']['settings']['rate'], 'normal')
+
+    def test_children_keep_separate_records(self):
+        self.assertEqual(self.store.snapshot()['children'], [dict(id='main', name='')])
+        self.send(event())
+        created = self.store.manage(dict(op='addChild', name='  둘째  '))['created']
+        other = self.store.snapshot(created)
+        self.assertEqual(other['state']['stars'], 0)
+        self.store.update(dict(child=created, epoch=other['epoch'], events=[event(), event()]))
+        self.assertEqual(self.store.snapshot(created)['state']['stars'], 2)
+        self.assertEqual(self.store.snapshot()['state']['stars'], 1)
+        self.store.manage(dict(op='renameChild', child='main', name='첫째'))
+        names = [c['name'] for c in Store(self.path).snapshot()['children']]
+        self.assertEqual(names, ['첫째', '둘째'])
+        with self.assertRaises(Invalid):
+            self.store.manage(dict(op='removeChild', child='main'))
+        with self.assertRaises(Invalid):
+            self.store.manage(dict(op='renameChild', child='main', name=''))
+        self.store.manage(dict(op='removeChild', child=created))
+        with self.assertRaises(UnknownChild):
+            self.store.snapshot(created)
+        self.assertEqual(self.store.snapshot()['state']['stars'], 1)
+
+    def test_child_limit(self):
+        for n in range(5):
+            self.store.manage(dict(op='addChild', name=f'아이{n}'))
+        with self.assertRaises(Invalid):
+            self.store.manage(dict(op='addChild', name='한 명 더'))
+
     def test_empty_new_device_does_not_block_real_legacy_settings(self):
         self.send(event('legacy', snapshot=empty_state()))
         old = empty_state(); old['stars'] = 3; old['settings']['count'] = 12
@@ -154,6 +215,21 @@ class HTTPTests(unittest.TestCase):
         self.assertEqual(self.request(body, **headers)[0], 403)
         headers['Origin'] = self.origin
         self.assertEqual(self.request(body, **headers)[0], 200)
+
+    def test_child_query_and_operations(self):
+        headers = {'X-Kkangchong-Token': self.token, 'Origin': self.origin, 'Content-Type': 'application/json'}
+        status, _, data = self.request(dict(op='addChild', name='둘째'), **headers)
+        self.assertEqual(status, 200)
+        child = data['created']
+        url = self.url
+        self.url = f'{url}?child={child}'
+        status, _, data = self.request(**{'X-Kkangchong-Token': self.token})
+        self.assertEqual((status, data['state']['stars'], len(data['children'])), (200, 0, 2))
+        self.url = f'{url}?child=nobody'
+        self.assertEqual(self.request(**{'X-Kkangchong-Token': self.token})[0], 410)
+        self.url = url
+        body = dict(child='nobody', epoch=self.epoch, events=[event()])
+        self.assertEqual(self.request(body, **headers)[0], 410)
 
 
 if __name__ == '__main__':

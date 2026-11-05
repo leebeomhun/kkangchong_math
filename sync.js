@@ -1,14 +1,18 @@
 /* Persistent operation journal: retries and concurrent devices never add an event twice. */
 (() => {
   'use strict';
-  const META = 'kkangchong-sync-v1';
-  const EVENT = 'kkangchong-sync-event-v1:';
-  const BACKUP = 'kkangchong-before-sync-v1';
-  const RECOVERY = 'kkangchong-sync-recovery-v1';
+  const MODES = ['hop', 'candy', 'fish', 'rocket', 'balloon', 'mole', 'carrot'];
   const clone = value => JSON.parse(JSON.stringify(value));
   const id = () => crypto.randomUUID ? crypto.randomUUID() : Array.from(crypto.getRandomValues(new Uint8Array(16)), n => n.toString(16).padStart(2, '0')).join('');
 
-  function create({ initialState, defaults, cleanSettings, onChange, onStatus }) {
+  // 첫째 아이('main')는 예전 저장 키를 그대로 쓰고, 다른 아이는 키 뒤에 '@아이 ID'를 붙입니다.
+  function create({ initialState, defaults, cleanSettings, onChange, onStatus, child = 'main', onChildren = () => {}, onGone = () => {} }) {
+    const tag = child === 'main' ? '' : '@' + child;
+    const META = 'kkangchong-sync-v1' + tag;
+    const EVENT = 'kkangchong-sync-event-v1' + tag + ':';
+    const BACKUP = 'kkangchong-before-sync-v1' + tag;
+    const RECOVERY = 'kkangchong-sync-recovery-v1' + tag;
+    const API = '/api/sync' + (child === 'main' ? '' : '?child=' + encodeURIComponent(child));
     const storage = localStorage, memory = new Map();
     let storageFailed = false, stopped = false, busy = false, timer = 0, failures = 0;
     let meta = read(META);
@@ -89,9 +93,20 @@
             if ((state.missed[key] || 0) > 1) state.missed[key]--;
             else delete state.missed[key];
           } else state.missed[key] = Math.min(3, (state.missed[key] || 0) + 1);
+          countStats(state, event);
         }
       }
       Object.keys(state.log).sort().slice(0, -60).forEach(day => { delete state.log[day]; });
+      const stats = state.stats ||= {};
+      Object.keys(stats).sort().slice(0, -60).forEach(day => { delete stats[day]; });
+    }
+    // 서버 count_stats와 같은 규칙: 날짜별 [푼 문제, 한 번에 맞힌 문제]
+    function countStats(state, event) {
+      const row = (state.stats ||= {})[event.day] ||= {};
+      const bump = pair => { pair[0]++; if (event.first) pair[1]++; };
+      bump(row[(event.a % 10) + event.b >= 10 ? 'carry' : 'plain'] ||= [0, 0]);
+      bump((row.add ||= {})[String(event.b)] ||= [0, 0]);
+      if (MODES.includes(event.mode)) bump((row.mode ||= {})[event.mode] ||= [0, 0]);
     }
     function publish() {
       refreshMeta();
@@ -135,6 +150,7 @@
     }
     function accept(data, acknowledged = []) {
       if (!data || typeof data.epoch !== 'string' || !Number.isInteger(data.revision) || !data.state?.settings) throw new Error('Invalid sync response');
+      if (Array.isArray(data.children)) onChildren(data.children);
       refreshMeta();
       acknowledged.forEach(remove);
       if (data.revision < meta.revision) { publish(); return false; }
@@ -167,12 +183,13 @@
       const timeout = setTimeout(() => controller.abort(), 8000);
       try {
         const payload = body ? JSON.stringify(body) : undefined;
-        const response = await fetch('/api/sync', {
+        const response = await fetch(API, {
           method: body ? 'POST' : 'GET', credentials: 'same-origin', cache: 'no-store',
           headers: body ? { 'Content-Type': 'application/json' } : {},
           body: payload, signal: controller.signal, keepalive: !!payload && payload.length < 50000
         });
         if (response.status === 403) throw Object.assign(new Error('Login required'), { auth: true });
+        if (response.status === 410) throw Object.assign(new Error('Child removed'), { gone: true });
         if (response.redirected || (!response.ok && response.status !== 409) || !response.headers.get('content-type')?.includes('application/json')) throw new Error('Sync unavailable');
         return { data: await response.json(), conflict: response.status === 409 };
       } finally { clearTimeout(timeout); }
@@ -194,7 +211,9 @@
           const resetIndex = pending.findIndex(e => e.event.type === 'reset');
           if (resetIndex >= 0) pending = pending.slice(0, resetIndex + 1);
           pending = pending.slice(0, 100);
-          const { data, conflict } = await request({ epoch: meta.epoch, events: pending.map(e => e.event) });
+          const body = { epoch: meta.epoch, events: pending.map(e => e.event) };
+          if (child !== 'main') body.child = child;
+          const { data, conflict } = await request(body);
           resetNotice = accept(data, conflict ? [] : pending) || resetNotice;
         } else {
           const { data } = await request();
@@ -204,6 +223,7 @@
         status(resetNotice ? 'reset' : entries().length ? 'saving' : 'saved');
         schedule(entries().length ? 100 : 15000);
       } catch (error) {
+        if (error.gone) { stopped = true; onGone(); return; }
         status(error.auth ? 'auth' : 'offline');
         failures++;
         schedule(Math.min(30000, 2000 * 2 ** Math.min(failures - 1, 4)));
@@ -221,8 +241,15 @@
       }
     });
     addEventListener('pagehide', () => { if (entries().length) flush(); });
+    // 아이 추가·이름 바꾸기·지우기 (보호자 화면). 인터넷이 연결되어 있어야 합니다.
+    async function manage(operation) {
+      const { data } = await request(operation);
+      if (!Array.isArray(data.children)) throw new Error('Invalid response');
+      onChildren(data.children);
+      return data;
+    }
     publish(); status('saving'); schedule(0);
-    return { capture, flush, stop() { stopped = true; clearTimeout(timer); } };
+    return { capture, flush, manage, stop() { stopped = true; clearTimeout(timer); } };
   }
   window.KkangchongSync = { create };
 })();

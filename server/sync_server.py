@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Private, single-child progress store. nginx handles the existing parent login."""
+"""Private progress store for one family. nginx handles the existing parent login.
+
+The first child keeps using the original `profile` row, so older databases need no data migration.
+Additional children live in the `children` table with the same payload shape."""
 import copy
 import hmac
 import json
@@ -10,17 +13,29 @@ import uuid
 from contextlib import contextmanager
 from datetime import date, datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from urllib.parse import parse_qs, urlsplit
 from pathlib import Path
 
 STICKERS = ['🐶','🐱','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐷','🐸','🐧','🐥','🦄','🐳','🐬','🦋','🐞','🌈','🌸','🌻','🍓','🍒','🍰','🧁','🍭','🍦','🎀','👑','💎',
             'friend-hug','friend-peace','friend-reading','friend-star','friend-carrot','friend-cheer']
 MODES = ['hop', 'candy', 'fish', 'rocket', 'balloon', 'mole', 'carrot']
 SETTINGS = dict(v=2, source='range', addends=[2], **{'from': 10}, to=19, carry='mix', count=5,
-                custom=[], order='list', modes=MODES, voice=True, sfx=True)
+                custom=[], order='list', modes=MODES, voice=True, sfx=True, rate='normal')
+RATES = ('slow', 'normal', 'fast')
+MAIN_CHILD = 'main'
+MAX_CHILDREN = 6
+
+
+class Invalid(ValueError):
+    pass
+
+
+class UnknownChild(LookupError):
+    pass
 
 
 def empty_state():
-    return dict(stars=0, rounds=0, stickers={}, log={}, missed={}, settings=copy.deepcopy(SETTINGS))
+    return dict(stars=0, rounds=0, stickers={}, log={}, missed={}, stats={}, settings=copy.deepcopy(SETTINGS))
 
 
 def number(value, maximum=1_000_000_000):
@@ -29,6 +44,10 @@ def number(value, maximum=1_000_000_000):
 
 def problem(a, b):
     return type(a) is int and type(b) is int and 0 <= a <= 99 and 1 <= b <= 9
+
+
+def crosses(a, b):
+    return a % 10 + b >= 10
 
 
 def day_key(value):
@@ -56,6 +75,7 @@ def clean_settings(raw):
     s['custom'] = [p for p in values if isinstance(p, list) and len(p) == 2 and problem(*p)][:30] if isinstance(values, list) else []
     for field in ('voice', 'sfx'):
         s[field] = raw.get(field) is not False
+    s['rate'] = raw.get('rate') if raw.get('rate') in RATES else 'normal'
     return s
 
 
@@ -98,10 +118,6 @@ def merge_legacy(state, snapshot, include_settings=False):
         state['settings'] = other['settings']
 
 
-class Invalid(ValueError):
-    pass
-
-
 def validate_event(event):
     if not isinstance(event, dict) or not isinstance(event.get('id'), str) or not re.fullmatch(r'[A-Za-z0-9:_-]{1,100}', event['id']):
         raise Invalid('Invalid event ID')
@@ -109,6 +125,8 @@ def validate_event(event):
     if kind == 'answer':
         if not problem(event.get('a'), event.get('b')) or type(event.get('first')) is not bool or not day_key(event.get('day')):
             raise Invalid('Invalid answer')
+        if 'mode' in event and event['mode'] not in MODES:
+            raise Invalid('Invalid mode')
     elif kind == 'round':
         if not day_key(event.get('day')):
             raise Invalid('Invalid day')
@@ -151,8 +169,39 @@ def apply_event(state, event, initial=False):
                     state['missed'].pop(key, None)
             else:
                 state['missed'][key] = min(3, state['missed'].get(key, 0) + 1)
+            count_stats(state, event)
     for day in sorted(state['log'])[:-60]:
         del state['log'][day]
+    stats = state.setdefault('stats', {})
+    for day in sorted(stats)[:-60]:
+        del stats[day]
+
+
+def count_stats(state, event):
+    """Per-day [solved, first-try] pairs for the parent screen. Same rules as sync.js."""
+    row = state.setdefault('stats', {}).setdefault(event['day'], {})
+    groups = [('carry' if crosses(event['a'], event['b']) else 'plain', None), ('add', str(event['b']))]
+    if event.get('mode') in MODES:
+        groups.append(('mode', event['mode']))
+    for group, name in groups:
+        if name is None:
+            pair = row.setdefault(group, [0, 0])
+        else:
+            pair = row.setdefault(group, {}).setdefault(name, [0, 0])
+        pair[0] += 1
+        pair[1] += int(event['first'])
+
+
+def fresh_payload():
+    return dict(epoch=str(uuid.uuid4()), revision=0, resetId=None, legacyAllowed=True, settingsSet=False,
+                state=empty_state(), updatedAt=None)
+
+
+def child_name(value):
+    name = ' '.join(value.split()) if isinstance(value, str) else ''
+    if not 1 <= len(name) <= 12:
+        raise Invalid('Name must be 1 to 12 characters')
+    return name
 
 
 class Store:
@@ -163,10 +212,37 @@ class Store:
             db.execute('PRAGMA journal_mode=WAL')
             db.execute('CREATE TABLE IF NOT EXISTS profile (id INTEGER PRIMARY KEY CHECK(id=1), data TEXT NOT NULL)')
             db.execute('CREATE TABLE IF NOT EXISTS receipts (id TEXT PRIMARY KEY, payload TEXT NOT NULL)')
-            payload = dict(epoch=str(uuid.uuid4()), revision=0, resetId=None, legacyAllowed=True, settingsSet=False,
-                           state=empty_state(), updatedAt=None)
-            db.execute('INSERT OR IGNORE INTO profile VALUES (1, ?)', (json.dumps(payload, ensure_ascii=False),))
+            # Child list. The first child ('main') keeps its records in `profile`, so data stays NULL.
+            db.execute('CREATE TABLE IF NOT EXISTS children (id TEXT PRIMARY KEY, name TEXT NOT NULL, position INTEGER NOT NULL, data TEXT)')
+            db.execute('INSERT OR IGNORE INTO profile VALUES (1, ?)', (json.dumps(fresh_payload(), ensure_ascii=False),))
+            db.execute("INSERT OR IGNORE INTO children VALUES (?, '', 0, NULL)", (MAIN_CHILD,))
         os.chmod(path, 0o600)
+
+    @staticmethod
+    def children(db):
+        return [dict(id=row[0], name=row[1]) for row in db.execute('SELECT id, name FROM children ORDER BY position, id')]
+
+    @staticmethod
+    def load(db, child):
+        if child == MAIN_CHILD:
+            data = json.loads(db.execute('SELECT data FROM profile WHERE id=1').fetchone()[0])
+        else:
+            row = db.execute('SELECT data FROM children WHERE id=?', (child,)).fetchone() if isinstance(child, str) else None
+            if not row or not row[0]:
+                raise UnknownChild(child)
+            data = json.loads(row[0])
+        # Records saved by older versions lack newer fields (e.g. settings.rate, stats): fill defaults on read.
+        data['state']['settings'] = clean_settings(data['state'].get('settings'))
+        data['state'].setdefault('stats', {})
+        return data
+
+    @staticmethod
+    def save(db, child, data):
+        payload = json.dumps(data, ensure_ascii=False)
+        if child == MAIN_CHILD:
+            db.execute('UPDATE profile SET data=? WHERE id=1', (payload,))
+        else:
+            db.execute('UPDATE children SET data=? WHERE id=?', (payload, child))
 
     @contextmanager
     def connect(self):
@@ -178,9 +254,39 @@ class Store:
         finally:
             db.close()
 
-    def snapshot(self):
+    def snapshot(self, child=MAIN_CHILD):
         with self.connect() as db:
-            return json.loads(db.execute('SELECT data FROM profile WHERE id=1').fetchone()[0])
+            return dict(self.load(db, child), children=self.children(db))
+
+    def manage(self, body):
+        """Add, rename or remove a child. Removing deletes only that child's records; 'main' stays."""
+        op = body.get('op')
+        with self.connect() as db:
+            db.execute('BEGIN IMMEDIATE')
+            listed = {c['id'] for c in self.children(db)}
+            if op == 'addChild':
+                if len(listed) >= MAX_CHILDREN:
+                    raise Invalid('Too many children')
+                new_id = uuid.uuid4().hex[:10]
+                position = db.execute('SELECT COALESCE(MAX(position), 0) + 1 FROM children').fetchone()[0]
+                db.execute('INSERT INTO children VALUES (?, ?, ?, ?)',
+                           (new_id, child_name(body.get('name')), position, json.dumps(fresh_payload(), ensure_ascii=False)))
+                created = new_id
+            elif op == 'renameChild':
+                if body.get('child') not in listed:
+                    raise UnknownChild(body.get('child'))
+                db.execute('UPDATE children SET name=? WHERE id=?', (child_name(body.get('name')), body['child']))
+                created = None
+            elif op == 'removeChild':
+                if body.get('child') == MAIN_CHILD:
+                    raise Invalid('The first child cannot be removed')
+                if body.get('child') not in listed:
+                    raise UnknownChild(body.get('child'))
+                db.execute('DELETE FROM children WHERE id=?', (body['child'],))
+                created = None
+            else:
+                raise Invalid('Unknown operation')
+            return dict(children=self.children(db), created=created)
 
     def update(self, body):
         if not isinstance(body, dict) or not isinstance(body.get('events'), list) or not 1 <= len(body['events']) <= 100:
@@ -192,9 +298,10 @@ class Store:
             raise Invalid('Duplicate IDs in batch')
         if any(e['type'] == 'reset' for e in events[:-1]):
             raise Invalid('Reset must end the batch')
+        child = body.get('child', MAIN_CHILD)
         with self.connect() as db:
             db.execute('BEGIN IMMEDIATE')
-            data = json.loads(db.execute('SELECT data FROM profile WHERE id=1').fetchone()[0])
+            data = self.load(db, child)
             new = []
             for event in events:
                 payload = json.dumps(event, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
@@ -205,7 +312,7 @@ class Store:
                 else:
                     new.append((event, payload))
             if new and body.get('epoch') != data['epoch']:
-                return 409, data
+                return 409, dict(data, children=self.children(db))
             for event, payload in new:
                 if event['type'] == 'legacy' and not data['legacyAllowed']:
                     continue
@@ -228,8 +335,8 @@ class Store:
                 data['revision'] += 1
             if new:
                 data['updatedAt'] = datetime.now(timezone.utc).isoformat()
-                db.execute('UPDATE profile SET data=? WHERE id=1', (json.dumps(data, ensure_ascii=False),))
-            return 200, data
+                self.save(db, child, data)
+            return 200, dict(data, children=self.children(db))
 
 
 class SyncServer(ThreadingHTTPServer):
@@ -256,7 +363,7 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(payload)
 
     def authorize(self):
-        if self.path != '/api/sync':
+        if urlsplit(self.path).path != '/api/sync':
             self.reply(404, dict(error='Not found'))
             return False
         if not hmac.compare_digest(self.headers.get('X-Kkangchong-Token', ''), self.server.token):
@@ -270,8 +377,11 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.authorize():
+            child = parse_qs(urlsplit(self.path).query).get('child', [MAIN_CHILD])[0]
             try:
-                self.reply(200, self.server.store.snapshot())
+                self.reply(200, self.server.store.snapshot(child))
+            except UnknownChild:
+                self.reply(410, dict(error='Unknown child'))
             except sqlite3.Error:
                 self.reply(503, dict(error='Storage unavailable'))
 
@@ -287,8 +397,13 @@ class Handler(BaseHTTPRequestHandler):
                 self.reply(413, dict(error='Body too large'))
                 return
             body = json.loads(self.rfile.read(length))
-            status, data = self.server.store.update(body)
+            if isinstance(body, dict) and 'op' in body:
+                status, data = 200, self.server.store.manage(body)
+            else:
+                status, data = self.server.store.update(body)
             self.reply(status, data)
+        except UnknownChild:
+            self.reply(410, dict(error='Unknown child'))
         except (ValueError, UnicodeError, RecursionError) as error:
             self.reply(400, dict(error=str(error)[:100]))
         except sqlite3.Error:

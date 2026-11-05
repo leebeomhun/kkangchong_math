@@ -25,7 +25,7 @@ class TestHandler(Handler, SimpleHTTPRequestHandler):
         pass
 
     def do_GET(self):
-        if self.path == '/api/sync':
+        if self.path.split('?')[0] == '/api/sync':
             self.headers['X-Kkangchong-Token'] = self.server.token
             Handler.do_GET(self)
         else:
@@ -73,7 +73,8 @@ def run():
 
                 def start_answer(page):
                     home(page)
-                    page.locator('#startBtn').click(); page.locator('#setupGo').click()
+                    # '놀이 시작'은 보호자 설정 화면을 거치지 않고 저장된 문제로 바로 시작합니다.
+                    page.locator('#startBtn').click()
                     page.wait_for_function('!document.querySelector("#choices").classList.contains("waiting")')
                     page.locator('#play .ans[data-v="2"]').click()
 
@@ -175,6 +176,24 @@ def run():
                 assert a.locator('#syncStatus').get_attribute('data-status') == 'saved'
                 a.locator('.parent-body').evaluate('(el) => el.scrollTop = 0')
                 a.screenshot(path=str(OUT / 'parent-sync-phone.png'))
+                # A second child keeps separate records on the same server and devices.
+                parent(a)
+                a.wait_for_selector('#kidsPanel:not([hidden])')
+                a.locator('#kidName').fill('둘째'); a.locator('#kidAdd').click()
+                a.wait_for_function("JSON.parse(localStorage.getItem('kkangchong-children') || '[]').length === 2")
+                second = a.evaluate("JSON.parse(localStorage.getItem('kkangchong-children'))[1].id")
+                with a.expect_navigation():
+                    a.locator('#kidList [data-act="switch"]').click()
+                a.wait_for_selector('#kidChip:not([hidden])')
+                play(a)
+                a.wait_for_function("!Object.keys(localStorage).some(k => k.startsWith('kkangchong-sync-event-v1@'))", timeout=20000)
+                assert store.snapshot(second)['state']['stars'] == 1
+                assert store.snapshot()['state']['stars'] == 1
+                assert store.snapshot(second)['state']['stats']
+                a.locator('#rewardHome').click(); a.locator('#kidChip').click()
+                with a.expect_navigation():
+                    a.locator('#kidPick [data-kid="main"]').click()
+                sync(a, 1)
                 # API reads are never stored by the service worker.
                 assert not a.evaluate("async () => !!(await caches.match('/api/sync'))")
                 assert a.evaluate("async () => !!(await caches.match('sync.js'))")
@@ -183,7 +202,8 @@ def run():
                               offline_merge=True, lost_response_retry=True, concurrent_tabs=True, settings_patches=True,
                               reset_prevents_resurrection=True, legacy_blocked_after_reset=True,
                               unbound_old_work_blocked_after_reset=True, lost_reset_response=True,
-                              play_after_offline_reset=True, api_never_cached=True, javascript_errors=errors)
+                              play_after_offline_reset=True, second_child_separate=True, api_never_cached=True,
+                              javascript_errors=errors)
                 (OUT / 'validation.json').write_text(json.dumps(result, indent=2) + '\n')
                 print(json.dumps(result))
                 browser.close()

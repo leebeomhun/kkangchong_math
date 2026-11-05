@@ -112,7 +112,7 @@ button{ font:inherit; color:inherit; -webkit-appearance:none; appearance:none; c
 input,textarea{ font:inherit; color:inherit; -webkit-user-select:text; user-select:text }
 :focus-visible{ outline:4px solid var(--focus); outline-offset:3px }
 
-.sun{ position:fixed; top:calc(88px + env(safe-area-inset-top,0px)); right:calc(5% + env(safe-area-inset-right,0px)); width:clamp(60px,14vw,108px); aspect-ratio:1; border-radius:50%; background:var(--sun); box-shadow:0 0 0 12px color-mix(in srgb, var(--sun) 25%, transparent), 0 0 0 26px color-mix(in srgb, var(--sun) 12%, transparent); pointer-events:none; z-index:0; opacity:.9 }
+.sun{ position:fixed; top:calc(88px + env(safe-area-inset-top,0px)); right:calc(16% + env(safe-area-inset-right,0px)); width:clamp(60px,14vw,108px); aspect-ratio:1; border-radius:50%; background:var(--sun); box-shadow:0 0 0 12px color-mix(in srgb, var(--sun) 25%, transparent), 0 0 0 26px color-mix(in srgb, var(--sun) 12%, transparent); pointer-events:none; z-index:0; opacity:.9 }
 body[data-screen]:not([data-screen="home"]) .sun{ display:none }
 .meadow{ position:fixed; left:0; right:0; bottom:0; height:15vh; pointer-events:none; z-index:0;
   background:
@@ -141,7 +141,12 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
 .big-btn.secondary:active{ box-shadow:0 2px 0 var(--panel-line) }
 .big-btn:disabled{ opacity:.45; cursor:not-allowed; transform:none; box-shadow:0 7px 0 var(--carrot-deep) }
 .big-btn .count{ font:600 .7em/1 var(--font-num); color:var(--ink-soft) }
+.big-btn:not(.secondary) .count{ color:var(--on-carrot); opacity:.9 }
 .text-btn{ border:0; background:none; color:var(--ink-soft); font:400 20px var(--font-ko); padding:10px 12px; text-decoration:underline; text-underline-offset:4px }
+/* 길게 눌러야 하는 보호자용 글자 버튼: 누르는 동안 밑줄이 차오름 */
+.text-btn.hold{ background:linear-gradient(var(--carrot),var(--carrot)) left calc(100% - 4px) / 0% 4px no-repeat; transition:background-size .2s }
+.text-btn.hold.holding{ background-size:100% 4px; transition:background-size 1.5s linear }
+.invisible{ visibility:hidden }
 .screen-title{ margin:0; font:400 clamp(26px,7vw,34px)/1.1 var(--font-ko); text-align:center; flex:1 }
 .badge{ display:inline-block; vertical-align:middle; margin-left:6px; padding:3px 10px; border-radius:999px; background:var(--step-bg); color:var(--step-fg); font:700 13px/1.3 var(--font-body) }
 .spacer{ width:58px; flex:none }
@@ -163,6 +168,9 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
 .hopword span:nth-child(2){ animation-delay:.18s }
 .tagline{ margin:0; font-size:clamp(18px,4.6vw,24px); color:var(--ink-soft) }
 .today-chip{ margin:0; padding:8px 16px; border-radius:999px; background:var(--step-bg); color:var(--step-fg); font:600 17px var(--font-num) }
+.kid-chip{ min-width:0; display:inline-flex; align-items:center; gap:8px; height:52px; padding:6px 16px 6px 6px; border:0; border-radius:999px; background:var(--panel); box-shadow:0 4px 0 var(--panel-line); font:400 20px/1 var(--font-ko); white-space:nowrap }
+.kid-chip .nm{ overflow:hidden; text-overflow:ellipsis }
+.avatar{ flex:none; width:40px; height:40px; border-radius:50%; display:grid; place-items:center; background:var(--av,var(--plum)); color:#fff; font:400 19px/1 var(--font-ko) }
 .home-actions{ display:flex; flex-direction:column; gap:16px; width:min(100%,420px) }
 .sync-status{ margin:0; color:var(--ink-soft); font:400 14px/1.45 var(--font-body) }
 .sync-status[data-status="saved"]{ color:var(--leaf) }
@@ -222,7 +230,8 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
 .cempty{ color:var(--ink-soft); font-size:15px; padding:6px 0 }
 .custom-tools{ display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; margin-top:14px; padding-top:12px; border-top:1px solid var(--panel-line) }
 .custom-tools .label{ font-weight:700 }
-.setup-foot{ display:flex; justify-content:center }
+.setup-foot{ display:flex; flex-direction:column; align-items:center; gap:8px }
+.foot-note{ margin:0; max-width:460px; padding:8px 14px; border-radius:14px; background:var(--panel); box-shadow:0 3px 0 var(--panel-line); color:var(--berry); font:700 15px/1.45 var(--font-body); text-align:center }
 .setup-foot .big-btn{ width:min(100%,460px) }
 .stat-row{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; text-align:center }
 .stat b{ display:block; font:600 32px/1.1 var(--font-num); font-variant-numeric:tabular-nums }
@@ -233,6 +242,7 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
 .week .bar{ width:70%; max-width:34px; min-height:3px; border-radius:8px 8px 3px 3px; background:var(--leaf) }
 .week .val{ font:600 13px/1 var(--font-num); font-variant-numeric:tabular-nums; color:var(--ink-soft) }
 .week .day{ font-size:14px; color:var(--ink-soft) }
+.week.weeks .day{ font-size:11px; white-space:nowrap; letter-spacing:-.02em }
 .week .today .day{ color:var(--ink); font-weight:700 }
 .week .today .bar{ background:var(--carrot) }
 .weak{ display:flex; flex-wrap:wrap; gap:8px }
@@ -242,6 +252,27 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
 .setting .label{ font-weight:700 }
 .tips{ margin:0; padding-left:1.2em; display:flex; flex-direction:column; gap:6px }
 .reset-row{ display:flex; flex-wrap:wrap; gap:10px; align-items:center }
+.panel-head{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px }
+.panel-head h3{ margin:0 }
+.today-sum{ margin:0 0 12px; font:600 19px/1.4 var(--font-num); color:var(--step-fg) }
+.sync-time{ margin:8px 0 0; color:var(--ink-soft); font-size:14px }
+.meters{ display:flex; flex-direction:column; gap:10px }
+.meters h4{ margin:6px 0 0; font:700 15px var(--font-body); color:var(--ink-soft) }
+.meter-row{ display:flex; flex-direction:column; gap:5px; font-size:15px }
+.meter-row .mtop{ display:flex; flex-wrap:wrap; justify-content:space-between; align-items:baseline; gap:2px 10px }
+.meter-row .lbl{ font-weight:700 }
+.meter-row .bar2{ height:14px; border-radius:999px; background:var(--dim); overflow:hidden }
+.meter-row .bar2 i{ display:block; height:100%; border-radius:inherit; background:var(--leaf) }
+.meter-row.hard .bar2 i{ background:var(--carrot) }
+.meter-row .pct{ font-variant-numeric:tabular-nums; color:var(--ink-soft) }
+.meter-row .hard-tag{ margin-left:6px; padding:1px 8px; border-radius:999px; background:var(--carrot); color:var(--on-carrot); font-size:12px; font-weight:700 }
+.kid-row{ display:flex; flex-wrap:wrap; align-items:center; gap:8px 10px; padding-block:10px; border-top:1px solid var(--panel-line) }
+.kid-row:first-child{ border-top:0; padding-top:2px }
+.kid-row input,.kid-add input{ flex:1 1 9em; min-width:0; height:46px; padding:0 12px; border-radius:14px; border:2px solid var(--panel-line); background:var(--sky); font:700 17px var(--font-body) }
+.kid-row .now{ padding:4px 10px; border-radius:999px; background:var(--step-bg); color:var(--step-fg); font-size:13px; font-weight:700 }
+.kid-add{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px }
+.voice-note{ margin:10px 0 0; color:var(--ink-soft); font-size:14px }
+.voice-note.warn{ color:var(--berry) }
 
 /* ---- play ---- */
 #play{ display:grid; grid-template-columns:minmax(0,1fr); grid-template-rows:auto auto auto minmax(0,1fr) auto; grid-template-areas:"top" "eq" "talk" "stage" "choices"; gap:8px }
@@ -276,6 +307,10 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
     radial-gradient(34% 8px at 60% 90%, var(--ripple), transparent 70%),
     linear-gradient(180deg, var(--water), var(--water-deep)); }
 .stones{ position:relative; display:flex; gap:clamp(4px,1.4vw,12px); justify-content:center; font-size:clamp(18px,5.4vw,32px) }
+/* 돌이 너무 작아지면(더하는 수가 클 때) 돌 크기를 지키고 옆으로 밀어 보기. 깡충이를 따라 저절로 움직임 */
+.pond.scroll{ overflow-x:auto; overflow-y:hidden; overscroll-behavior-x:contain; scrollbar-width:none }
+.pond.scroll::-webkit-scrollbar{ display:none }
+.pond.scroll .stones{ justify-content:flex-start }
 .stone{ flex:1 1 0; min-width:0; max-width:108px; aspect-ratio:1.3; display:grid; place-items:center; background:var(--stone); border-radius:48% 52% 44% 46% / 58% 56% 44% 42%; box-shadow:0 6px 0 var(--stone-edge); font-family:var(--font-num); font-weight:600; line-height:1; color:var(--stone-ink); font-variant-numeric:tabular-nums; transition:background .25s }
 .stone:nth-child(even){ border-radius:54% 46% 50% 48% / 55% 60% 40% 45% }
 .stone.start{ background:var(--stone-start) }
@@ -363,18 +398,30 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
 .pail{ position:relative; width:100%; aspect-ratio:1/1.6; min-height:0; flex:0 1 auto; display:flex; flex-direction:column; align-items:center; gap:6px; padding:14% 12% 10%;
   clip-path:polygon(0 0,100% 0,86% 100%,14% 100%); border-radius:0 0 18px 18px;
   background:linear-gradient(180deg, var(--pail-deep) 0 9%, var(--pail) 9% 100%) }
-.pail-fish{ width:100%; flex:1; min-height:0; display:grid; grid-template-columns:repeat(var(--cols),minmax(0,1fr)); grid-auto-rows:minmax(0,1fr); gap:3px; padding:2px }
+.pail-fish{ width:100%; flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center; gap:7px; padding:2px }
 .pail-fish svg{ display:block; width:100%; height:100%; min-width:0; min-height:0; overflow:visible }
+/* 열 마리 묶음: 작은 물고기 10마리(5×2)를 한 칸에 모아 '10'을 붙임. 사탕 상자의 열 개 묶음과 같은 모양 */
+.pail-tens{ flex:none; display:grid; grid-template-columns:minmax(0,1fr); gap:9px 5px; padding-top:6px }
+.pail-tens.two{ grid-template-columns:repeat(2,minmax(0,1fr)) }
+.pail-school{ position:relative; display:block; min-width:0; padding:3px; border-radius:8px; background:var(--ghost); box-shadow:inset 0 0 0 1.5px var(--star-deep) }
+.pail-school svg{ height:auto; aspect-ratio:96/25 }
+.pail-school b{ position:absolute; right:-5px; top:-8px; padding:1px 5px; border-radius:8px; background:var(--a-ink); color:#fff; font:700 clamp(11px,2.6vw,15px)/1.1 var(--font-num) }
+.pail-ones{ flex:0 1 auto; min-height:0; display:grid; grid-template-columns:repeat(var(--cols),minmax(0,1fr)); grid-auto-rows:auto; align-content:center; gap:4px 3px }
 .pail-resident{ display:grid; place-items:center; min-width:0; min-height:0 }
-.pail-resident svg{ max-height:48px }
-.pail-school{ position:relative; width:100%; height:100%; max-height:48px; align-self:center; min-width:0; min-height:0; display:grid; place-items:center; border:1px solid var(--ripple); border-radius:6px; background:var(--ghost) }
-.pail-school-n{ position:absolute; right:-2px; bottom:-1px; padding:1px 2px; border-radius:4px; background:var(--panel); text-align:center; font:600 clamp(9px,1.6vw,13px)/1 var(--font-num); color:var(--ink) }
+.pail-resident svg{ height:auto; aspect-ratio:3/2; max-height:48px }
+.bucket:not(.tens) .pail-ones{ flex:1 1 auto; grid-auto-rows:minmax(0,1fr) }   /* 한 자리 수는 통을 꽉 채워 크게 */
+.bucket:not(.tens) .pail-resident svg{ height:100%; aspect-ratio:auto }
+.bucket.tens{ width:clamp(120px,36vw,250px) }
+.bucket.tens .pail{ aspect-ratio:auto; flex:1 1 auto; min-height:170px }   /* 두 자리 수는 통을 놀이 영역 높이만큼 키움 */
 .pail-label{ flex:none; display:flex; align-items:baseline; justify-content:center; gap:3px; white-space:nowrap }
 .pail-n{ min-width:1.5em; padding:2px 4px; border-radius:12px; background:var(--panel); color:var(--a-ink); font:700 clamp(22px,5.4vw,42px)/1.1 var(--font-num); text-align:center; font-variant-numeric:tabular-nums }
 .pail-u{ font-size:clamp(12px,2vw,16px); color:var(--ink) }
 .pail.glow{ animation:blink .9s ease-in-out }
 .pail.happy{ animation:wiggle-now .5s ease-in-out 2 }
-.sea{ position:relative; flex:1; min-width:0; border-radius:28px; overflow:hidden;
+.fish-wrap{ justify-content:center }
+.fish-wrap.done{ gap:0 }
+.fish-wrap.done .sea{ flex-grow:0; opacity:0 }
+.sea{ position:relative; flex:1; min-width:0; border-radius:28px; overflow:hidden; transition:flex-grow .5s ease, opacity .35s ease;
   background:radial-gradient(30% 7px at 24% 22%, var(--ripple), transparent 70%), radial-gradient(26% 7px at 72% 64%, var(--ripple), transparent 70%), linear-gradient(180deg, var(--water), var(--water-deep)) }
 .fish{ --fw:clamp(58px,13vw,112px); --fh:calc(var(--fw) * .67); position:absolute; left:var(--x); top:calc(8px + (100% - var(--fh) - 16px) * var(--yy)); width:var(--fw); height:var(--fh); border:0; padding:0; background:none;
   animation:swim var(--dur) ease-in-out var(--delay) infinite alternate, fishbob 1.4s ease-in-out infinite alternate }
@@ -429,7 +476,11 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
 
 /* 당근 주기 — 정답 당근을 끌어서(또는 눌러서) 깡충이에게 */
 .feed{ width:100%; max-width:860px; flex:1 1 auto; min-height:0; display:flex; align-items:center; justify-content:center; gap:clamp(12px,4vw,44px) }
-.feed .bunny{ flex:none; width:clamp(112px,26vw,260px); animation:idle 2.6s ease-in-out infinite }
+.feed .bunny{ position:relative; flex:none; width:clamp(112px,26vw,260px); animation:idle 2.6s ease-in-out infinite }
+/* 당근을 끄는 동안 놓을 곳(깡충이)을 동그라미로 표시하고, 위에 오면 진하게 */
+.feed .bunny::before{ content:""; position:absolute; left:4%; right:4%; top:8%; bottom:0; z-index:-1; border-radius:50%; border:4px dashed var(--carrot); opacity:0; transition:opacity .2s, background-color .2s; pointer-events:none }
+.feed .bunny.drop-ready::before{ opacity:.75 }
+.feed .bunny.drop-over::before{ opacity:1; border-style:solid; background-color:color-mix(in srgb, var(--carrot) 20%, transparent) }
 .feed .bunny.cheer{ animation:cheer .8s ease-in-out 2 }
 .feed .bunny.nope{ animation:nope .55s ease-in-out }
 .feed .bunny.chomp{ animation:chomp .45s ease-in-out 2 }
@@ -450,11 +501,17 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
 .strip b{ min-width:2em; padding:6px 8px; border-radius:12px; background:var(--stone-start); color:var(--ink); font:700 clamp(20px,5vw,26px)/1 var(--font-num); text-align:center }
 .strip b.nx{ background:var(--step-bg); color:var(--step-fg); animation:pop-in .35s }
 .strip i{ font:700 18px/1 var(--font-num); font-style:normal; color:var(--ink-soft) }
+.strip.ghost{ visibility:hidden }   /* 힌트 띠 자리를 미리 잡아 두어 틀렸을 때 놀이가 밀려 내려가지 않게 */
 
 /* ---- reward ---- */
 .reward-main{ flex:1; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; text-align:center }
 .reward-title{ margin:0; font:400 clamp(42px,12vw,76px)/1.05 var(--font-ko); color:var(--carrot); animation:pop-in .6s }
 .reward-sub{ margin:0; font-size:clamp(20px,5vw,26px); color:var(--ink-soft) }
+.reward-stars{ display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:2px 4px; max-width:min(100%,520px) }
+.reward-stars .star-ico{ width:clamp(26px,7vw,36px); height:clamp(26px,7vw,36px); animation:pop-in .45s backwards; animation-delay:calc(.25s + var(--i) * .09s) }
+.reward-note{ margin:0; padding:4px 12px; border-radius:999px; background:var(--ghost); color:var(--ink-soft); font:400 15px/1.4 var(--font-body) }
+.reward-note:empty{ display:none }
+.reward-stars .pill-n{ margin-left:4px; font:600 28px/1 var(--font-num); color:var(--ink) }
 .gifts{ display:flex; gap:clamp(14px,5vw,40px); justify-content:center; padding-top:20px }
 .gift{ position:relative; width:clamp(88px,25vw,140px); aspect-ratio:1/1.05; border:0; padding:0; background:none; animation:wiggle 2.2s ease-in-out infinite; animation-delay:calc(var(--i) * .35s) }
 .gift .box{ position:absolute; left:8%; right:8%; bottom:0; height:62%; border-radius:10px; background:linear-gradient(90deg, transparent 43%, var(--star) 43% 57%, transparent 57%), var(--g); box-shadow:inset 0 -8px 0 rgba(0,0,0,.12) }
@@ -485,9 +542,24 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
 .sticker .emo{ font-size:46px; line-height:1 }
 .sticker .nm{ font-size:16px }
 .sticker.locked{ background:var(--ghost); box-shadow:none; border:3px dashed var(--dim); color:var(--ink-soft) }
-.sticker.locked .emo{ font:600 34px var(--font-num); color:var(--dim) }
+.sticker.locked .sticker-art{ filter:brightness(0); opacity:.08 }   /* 못 모은 스티커는 그림자로 보여 줌 */
+:root[data-theme="dark"] .sticker.locked .sticker-art{ filter:brightness(0) invert(1); opacity:.16 }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .sticker.locked .sticker-art{ filter:brightness(0) invert(1); opacity:.16 } }
+.book-banner{ grid-column:1 / -1; display:flex; align-items:center; justify-content:center; gap:10px; padding:14px; border-radius:22px; background:var(--panel); box-shadow:0 4px 0 var(--panel-line); color:var(--carrot); font:400 clamp(22px,6vw,30px)/1.2 var(--font-ko); text-align:center }
 .sticker .x{ position:absolute; top:6px; right:8px; padding:2px 8px; border-radius:999px; background:var(--carrot); color:var(--on-carrot); font:600 14px var(--font-num) }
 .sticker.wiggle{ animation:wiggle-now .5s ease-in-out }
+
+/* ---- 가운데 창 (그만하기 확인, 아이 고르기, 스티커 크게 보기) ---- */
+.sheet{ position:fixed; inset:0; z-index:70; display:grid; place-items:center; padding:max(16px, env(safe-area-inset-top,0px)) 16px max(16px, env(safe-area-inset-bottom,0px)); background:rgba(20,28,54,.5) }
+.sheet-card{ width:min(100%,420px); max-height:100%; overflow-y:auto; display:flex; flex-direction:column; align-items:center; gap:14px; padding:22px 20px 20px; border-radius:30px; background:var(--panel); box-shadow:0 8px 0 var(--panel-line); text-align:center; animation:pop-in .3s }
+.sheet-title{ margin:0; font:400 clamp(28px,8vw,38px)/1.2 var(--font-ko) }
+.sheet-card .big-btn.secondary{ background:var(--sky); box-shadow:0 7px 0 var(--panel-line) }
+.sheet-actions{ width:100%; display:flex; flex-direction:column; gap:14px }
+.sheet-bunny{ width:clamp(96px,28vw,140px) }
+.kid-pick{ justify-content:flex-start; padding:12px 20px; font-size:clamp(24px,6.6vw,32px) }
+.kid-pick .avatar{ width:52px; height:52px; font-size:26px }
+.kid-pick[aria-current="true"]{ box-shadow:0 7px 0 var(--panel-line), inset 0 0 0 4px var(--leaf) }
+.sticker-view{ width:min(260px,62vw,46vh); aspect-ratio:1; filter:drop-shadow(0 8px 8px rgba(106,59,85,.14)) }
 
 /* ---- fx & toast ---- */
 #fx{ position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:50 }
@@ -521,6 +593,9 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
 @keyframes nope{ 0%,100%{ transform:rotate(0) } 25%{ transform:rotate(-9deg) } 75%{ transform:rotate(9deg) } }
 @keyframes chomp{ 0%,100%{ transform:scale(1,1) } 50%{ transform:scale(1.08,.9) } }
 
+@media (orientation: portrait){
+  .bubble{ min-height:calc(2.7em + 24px); display:flex; align-items:center; justify-content:center }
+}
 /* 좁은 세로 화면: 당근은 깡충이 아래에, 두더지는 위 2마리·아래 1마리로 크게 */
 @media (orientation: portrait) and (max-width: 600px){
   .feed{ flex-direction:column; gap:12px }
@@ -530,6 +605,7 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
   .hole{ width:min(38vw,19vh) }
   .sign{ font-size:clamp(26px,8vw,40px) }
   .bucket{ width:clamp(100px,27vw,160px) }
+  .bucket.tens{ width:clamp(124px,40vw,200px) }
 }
 
 /* ---- 세로로 쓰는 작은 휴대폰 (iPhone SE 등) ---- */
@@ -580,6 +656,7 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
   .fish-wrap{ max-height:none; min-height:0 }
   .fish{ --fw:clamp(46px,15vh,70px) }
   .bucket{ width:clamp(88px,26vh,120px); gap:4px }
+  .bucket.tens{ width:clamp(100px,32vh,150px) }
   .cf{ width:clamp(20px,7vh,30px) }
   .pail-n{ font-size:clamp(20px,6vh,24px) }
   .space{ padding-top:28px; min-height:0; max-height:none }
@@ -615,6 +692,18 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
   .reward-links{ flex-basis:auto }
   .text-btn{ font-size:17px; padding:8px }
   .setup-foot .big-btn{ padding:14px 20px; font-size:24px }
+  .setup-lead{ display:none }
+  .chips.seg .chip{ min-height:42px; font-size:17px }
+  .foot-note{ font-size:13px }
+  .reward-stars .star-ico{ width:22px; height:22px }
+  .reward-note{ font-size:13px }
+  .kid-chip{ height:44px; font-size:17px }
+  .kid-chip .avatar{ width:34px; height:34px; font-size:16px }
+  .sheet-card{ gap:10px; padding:14px 18px }
+  .sheet-bunny{ width:72px }
+  #quitSheet .sheet-actions{ flex-direction:row }
+  #quitSheet .sheet-actions .big-btn{ flex:1; padding:14px 16px; font-size:24px }
+  .sticker-view{ width:min(180px,40vh) }
 }
 
 @media (prefers-reduced-motion: reduce){
@@ -631,9 +720,10 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
   <section id="home" class="screen" aria-label="처음 화면">
     <header class="topbar">
       <span class="pill" aria-label="모은 별"><svg class="star-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17.1l-5.9 3.2 1.3-6.5L2.5 9.3l6.6-.8z"/></svg><span id="starCount">0</span></span>
-      <button class="icon-btn round" id="parentBtn" type="button" aria-label="보호자 기록 보기 (길게 누르기)">
+      <button class="kid-chip" id="kidChip" type="button" hidden><span class="avatar" id="kidChipAv" aria-hidden="true"></span><span class="nm" id="kidChipName"></span></button>
+      <button class="icon-btn round" id="parentBtn" type="button" aria-label="보호자 메뉴 (길게 누르기)">
         <svg class="ring" viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="27" pathLength="100"/></svg>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="3.4"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M10.03 4.66L10.39 1.83L13.61 1.83L13.97 4.66A7.6 7.6 0 0 1 15.80 5.42L18.05 3.67L20.33 5.95L18.58 8.20A7.6 7.6 0 0 1 19.34 10.03L22.17 10.39L22.17 13.61L19.34 13.97A7.6 7.6 0 0 1 18.58 15.80L20.33 18.05L18.05 20.33L15.80 18.58A7.6 7.6 0 0 1 13.97 19.34L13.61 22.17L10.39 22.17L10.03 19.34A7.6 7.6 0 0 1 8.20 18.58L5.95 20.33L3.67 18.05L5.42 15.80A7.6 7.6 0 0 1 4.66 13.97L1.83 13.61L1.83 10.39L4.66 10.03A7.6 7.6 0 0 1 5.42 8.20L3.67 5.95L5.95 3.67L8.20 5.42A7.6 7.6 0 0 1 10.03 4.66Z"/><circle cx="12" cy="12" r="3.2"/></svg>
       </button>
     </header>
     <div class="home-main">
@@ -644,7 +734,7 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
         <p class="today-chip" id="todayChip">+2 더하기 · 10~19 · 5문제</p>
       </div>
       <div class="home-actions">
-        <button class="big-btn" id="startBtn" type="button">놀이 시작</button>
+        <button class="big-btn" id="startBtn" type="button"><span id="startLabel">놀이 시작</span><span class="count" id="resumeCount" hidden></span></button>
         <button class="big-btn secondary" id="bookBtn" type="button">스티커북 <span class="count" id="stickerCount">0/36</span></button>
       </div>
     </div>
@@ -658,7 +748,7 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
       <span class="spacer"></span>
     </header>
     <div class="setup-body">
-      <p class="setup-lead">문제를 정한 뒤 아이에게 건네주세요. 정한 내용은 다음에도 그대로 남아요.</p>
+      <p class="setup-lead">여기서 정한 문제로 아이가 '놀이 시작'을 누를 때마다 놀아요. 정한 내용은 다음에도 그대로 남아요.</p>
       <div class="chips seg" data-key="source" role="group" aria-label="문제 만드는 방법">
         <button class="chip" type="button" data-v="range">범위로 정하기</button>
         <button class="chip" type="button" data-v="custom">직접 만들기</button>
@@ -721,6 +811,11 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
         </div>
         <div class="chips" data-key="count"><button class="chip" type="button" data-v="3">3</button><button class="chip" type="button" data-v="5">5</button><button class="chip" type="button" data-v="10">10</button><button class="chip" type="button" data-v="15">15</button><button class="chip" type="button" data-v="20">20</button></div>
       </section>
+      <section class="panel" data-src="range">
+        <h3>이런 문제가 나와요</h3>
+        <div class="samples" id="samples"></div>
+        <p class="muted" id="poolNote"></p>
+      </section>
       <section class="panel wide">
         <h3>놀이 종류 <small>고른 놀이가 골고루 섞여 나와요</small></h3>
         <h4 class="sub">그림을 보며 이어 세기</h4>
@@ -729,13 +824,8 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
         <div class="chips" data-key="modes" data-multi=""><button class="chip" type="button" data-v="balloon">풍선 터뜨리기</button><button class="chip" type="button" data-v="mole">두더지 잡기</button><button class="chip" type="button" data-v="carrot">당근 주기</button></div>
         <p class="muted" style="margin-top:10px">처음에는 그림 놀이를 함께 고르고, 익숙해지면 식 놀이만 남겨 보세요. <button class="text-btn small" id="modesAll" type="button">모두 고르기</button></p>
       </section>
-      <section class="panel" data-src="range">
-        <h3>이런 문제가 나와요</h3>
-        <div class="samples" id="samples"></div>
-        <p class="muted" id="poolNote"></p>
-      </section>
     </div>
-    <div class="setup-foot"><button class="big-btn" id="setupGo" type="button">이대로 시작하기</button></div>
+    <div class="setup-foot"><p class="foot-note" id="goNote" role="status" hidden></p><button class="big-btn" id="setupGo" type="button">이대로 시작하기</button></div>
   </section>
 
   <!-- 놀이 화면 -->
@@ -754,7 +844,8 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
   <!-- 선물 화면 -->
   <section id="reward" class="screen" hidden aria-label="선물">
     <div class="reward-main">
-      <h2 class="reward-title" id="rewardTitle">참 잘했어요!</h2>
+      <h2 class="reward-title" id="rewardTitle">참 잘했어!</h2>
+      <div class="reward-stars" id="rewardStars" role="img"></div>
       <p class="reward-sub" id="rewardSub">선물 상자를 하나 골라 봐!</p>
       <div class="gifts" id="gifts"></div>
       <div class="reveal" id="reveal" hidden>
@@ -766,9 +857,10 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
         <button class="big-btn secondary" id="toBookBtn" type="button">스티커북</button>
         <div class="reward-links">
           <button class="text-btn" id="rewardHome" type="button">처음으로</button>
-          <button class="text-btn" id="rewardSetup" type="button">문제 바꾸기</button>
+          <button class="text-btn hold" id="rewardSetup" type="button" aria-label="문제 바꾸기 (보호자, 길게 누르기)">문제 바꾸기</button>
         </div>
       </div>
+      <p class="reward-note" id="rewardNote"></p>
     </div>
   </section>
 
@@ -782,22 +874,28 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
     <div class="book-grid" id="bookGrid"></div>
   </section>
 
-  <!-- 보호자 기록 -->
-  <section id="parent" class="screen" hidden aria-label="보호자 기록">
+  <!-- 보호자 메뉴 (톱니바퀴를 길게 눌러 들어옴) -->
+  <section id="parent" class="screen" hidden aria-label="보호자 메뉴">
     <header class="topbar">
       <button class="icon-btn" id="parentBack" type="button" aria-label="처음으로"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
-      <h2 class="screen-title">기록과 소리<span class="badge">보호자</span></h2>
+      <h2 class="screen-title">보호자 메뉴</h2>
       <span class="spacer"></span>
     </header>
     <div class="parent-body">
       <section class="panel">
+        <h3>오늘의 문제</h3>
+        <p class="today-sum" id="parentSummary"></p>
+        <button class="chip solid" id="toSetup" type="button">문제 정하기</button>
+        <p class="muted" style="margin-top:10px">아이가 처음 화면에서 '놀이 시작'을 누르면 이 문제로 바로 시작해요.</p>
+      </section>
+      <section class="panel">
         <h3>기록 저장</h3>
-        <p class="muted">같은 보호자 비밀번호로 접속한 기기들이 아이 한 명의 별, 스티커, 학습 기록과 문제 설정을 함께 사용해요.</p>
+        <p class="muted">같은 보호자 비밀번호로 접속한 기기들이 별, 스티커, 학습 기록과 문제 설정을 함께 사용해요. 인터넷이 끊겨도 계속 놀 수 있어요.</p>
         <div class="sync-controls">
           <p class="sync-status" id="syncStatus" role="status">이 기기에 기록을 보관하고 있어요.</p>
           <button class="chip" id="syncNow" type="button">지금 동기화</button>
         </div>
-        <p class="muted" style="margin-top:10px">인터넷이 끊겨도 계속 놀 수 있어요. 다시 연결되면 자동으로 저장해요.</p>
+        <p class="sync-time" id="syncTime"></p>
       </section>
       <section class="panel">
         <h3>오늘</h3>
@@ -808,8 +906,17 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
         </div>
       </section>
       <section class="panel">
-        <h3>최근 7일 푼 문제</h3>
+        <div class="panel-head">
+          <h3 id="chartTitle">최근 7일 푼 문제</h3>
+          <div class="chips" id="chartPeriod" role="group" aria-label="기간">
+            <button class="chip" type="button" data-p="day">7일</button><button class="chip" type="button" data-p="week">8주</button>
+          </div>
+        </div>
         <div class="week" id="week"></div>
+      </section>
+      <section class="panel">
+        <h3>잘하는 것 · 어려운 것 <small>최근 30일, 한 번에 맞힌 비율</small></h3>
+        <div class="meters" id="meters"></div>
       </section>
       <section class="panel">
         <h3>다시 연습할 문제</h3>
@@ -819,26 +926,40 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
         <h3>소리</h3>
         <div class="setting"><span class="label">목소리</span>
           <div class="chips" data-key="voice"><button class="chip" type="button" data-v="true">켜기</button><button class="chip" type="button" data-v="false">끄기</button></div></div>
+        <div class="setting"><span class="label">말 빠르기</span>
+          <div class="chips" data-key="rate"><button class="chip" type="button" data-v="slow">천천히</button><button class="chip" type="button" data-v="normal">보통</button><button class="chip" type="button" data-v="fast">빠르게</button></div></div>
         <div class="setting"><span class="label">효과음</span>
           <div class="chips" data-key="sfx"><button class="chip" type="button" data-v="true">켜기</button><button class="chip" type="button" data-v="false">끄기</button></div></div>
-        <p class="muted">문제 종류와 문제 수는 처음 화면에서 '놀이 시작'을 누르면 나오는 화면에서 정해요.</p>
+        <button class="chip" id="voiceTest" type="button">목소리 들어 보기</button>
+        <p class="voice-note" id="voiceNote"></p>
+      </section>
+      <section class="panel" id="kidsPanel" hidden>
+        <h3>아이 <small>아이마다 별·스티커·기록·문제를 따로 모아요</small></h3>
+        <div id="kidList"></div>
+        <div class="kid-add">
+          <input id="kidName" type="text" maxlength="12" placeholder="새 아이 이름" aria-label="새 아이 이름" enterkeyhint="done">
+          <button class="chip solid" id="kidAdd" type="button">아이 추가</button>
+        </div>
+        <p class="muted" style="margin-top:10px">아이가 두 명 이상이면 처음 화면 위쪽에서 누가 놀지 골라요. 추가하거나 이름을 바꿀 때는 인터넷 연결이 필요해요.</p>
       </section>
       <section class="panel">
         <h3>이렇게 쓰면 좋아요</h3>
         <ul class="tips">
           <li>하루 1~2판(5분 안팎)이면 충분해요. 아이가 더 하고 싶어 할 때 멈추는 게 다음 날 다시 하게 만드는 비결이에요.</li>
+          <li>문제는 이 화면의 '문제 정하기'에서 바꿔요. 한 판이 끝난 뒤 선물 화면의 '문제 바꾸기'를 길게 눌러도 돼요.</li>
+          <li>놀이 도중 집 버튼을 누르면 "그만할까?"를 물어봐요. 그만두면 처음 화면에 '이어 하기'가 나와 같은 날 이어서 할 수 있어요.</li>
           <li>징검다리·사탕 상자·물고기 잡기·별 따라 로켓은 "11 다음부터 두 번 세기(이어 세기)"를 손으로 해 보는 그림 놀이예요. 익숙해지면 풍선·두더지·당근처럼 식만 보는 놀이만 남겨 보세요.</li>
-          <li>물고기 잡기는 통 안의 노란 물고기와 숫자를 함께 보여 줘요. '10'이 붙은 물고기는 열 마리 묶음이에요. 통에 적힌 수에서 보라 물고기를 이어 세어 보세요.</li>
+          <li>물고기 잡기는 통 안의 노란 물고기와 숫자를 함께 보여 줘요. '10'이 붙은 칸에는 작은 물고기 열 마리가 들어 있어요. 통에 적힌 수에서 보라 물고기를 이어 세어 보세요.</li>
           <li>별 따라 로켓은 19 다음 20처럼 '다음 수'를 찾는 놀이라 10을 넘어가는 문제에 특히 좋아요.</li>
           <li>두 자리 수(@@+2)는 앞의 수를 '두 자리 10~99'로 고르세요. 사탕 상자가 열 개 묶음과 낱개로 나눠 보여 줘요.</li>
-          <li>18+2, 29+3처럼 10을 넘어가는 문제가 특히 어려워요. 따로 연습하려면 '이것만'을 골라 보세요.</li>
-          <li>학습지 문제를 그대로 내고 싶으면 '직접 만들기'에서 "11+2, 12+3"처럼 한꺼번에 붙여 넣으세요. 틀렸던 문제만 모아서 낼 수도 있어요.</li>
+          <li>18+2, 29+3처럼 10을 넘어가는 문제가 특히 어려워요. '잘하는 것 · 어려운 것'에서 비율을 보고, 따로 연습하려면 '이것만'을 골라 보세요.</li>
+          <li>학습지 문제를 그대로 내고 싶으면 '직접 만들기'에서 "11+2, 12+3"처럼 한꺼번에 붙여 넣으세요. 다시 연습할 문제만 모아서 낼 수도 있어요.</li>
           <li>틀려도 벌점이 없어요. 깡충이가 같이 세어 주고, 처음에 틀린 문제는 다음 판에 더 자주 나와요.</li>
         </ul>
       </section>
       <section class="panel">
         <h3>기록 지우기</h3>
-        <p class="muted">연결된 모든 기기의 별, 스티커, 풀이 기록을 지워요. 문제 설정은 그대로 남아요. 인터넷 연결이 끊겨 있으면 다시 연결될 때 반영돼요.</p>
+        <p class="muted" id="resetText">연결된 모든 기기에서 별, 스티커, 풀이 기록을 지워요. 문제 설정은 그대로 남아요. 인터넷 연결이 끊겨 있으면 다시 연결될 때 반영돼요.</p>
         <div class="reset-row" style="margin-top:10px">
           <button class="chip danger" id="resetAsk" type="button">기록 지우기</button>
           <span class="reset-row" id="resetConfirm" hidden>정말 지울까요?
@@ -854,6 +975,35 @@ body[data-screen]:not([data-screen="home"]) .sun{ display:none }
 <canvas id="fx" aria-hidden="true"></canvas>
 <div class="toast" id="toast" role="status" hidden></div>
 
+<!-- 놀이 중 집 버튼: 바로 나가지 않고 한 번 물어봄 -->
+<div class="sheet" id="quitSheet" hidden role="dialog" aria-modal="true" aria-labelledby="quitTitle">
+  <div class="sheet-card">
+    <div class="bunny sheet-bunny"><img src="assets/characters/floral-bunny-v1.png" width="1254" height="1254" alt="" draggable="false"></div>
+    <h2 class="sheet-title" id="quitTitle">그만할까?</h2>
+    <div class="sheet-actions">
+      <button class="big-btn" id="quitNo" type="button">계속 할래!</button>
+      <button class="big-btn secondary" id="quitYes" type="button">그만할래</button>
+    </div>
+  </div>
+</div>
+<!-- 아이가 두 명 이상일 때: 누가 놀지 고르기 -->
+<div class="sheet" id="kidSheet" hidden role="dialog" aria-modal="true" aria-labelledby="kidTitle">
+  <div class="sheet-card">
+    <h2 class="sheet-title" id="kidTitle">누가 놀까?</h2>
+    <div class="sheet-actions" id="kidPick"></div>
+    <button class="text-btn" id="kidClose" type="button">닫기</button>
+  </div>
+</div>
+<!-- 스티커북에서 스티커 크게 보기 -->
+<div class="sheet" id="stickerSheet" hidden role="dialog" aria-modal="true" aria-labelledby="stickerTitle">
+  <div class="sheet-card">
+    <div class="sticker-view" id="stickerView"></div>
+    <h2 class="sheet-title" id="stickerTitle"></h2>
+    <p class="muted" id="stickerMeta"></p>
+    <button class="big-btn secondary" id="stickerClose" type="button">닫기</button>
+  </div>
+</div>
+
 <script src="sync.js"></script>
 <script>
 (() => {
@@ -867,6 +1017,28 @@ const pick = a => a[Math.floor(Math.random() * a.length)];
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const reduceMotion = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+const readJSON = (k, fallback = null) => { try { const v = JSON.parse(localStorage.getItem(k) || 'null'); return v == null ? fallback : v; } catch (e) { return fallback; } };
+const writeJSON = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+const esc = t => String(t).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]);
+
+/* ================= 아이 (두 명 이상이면 기록을 따로) ================= */
+// 첫째 아이('main')는 예전 저장 키를 그대로 쓰고, 다른 아이는 키 뒤에 '@아이 ID'를 붙입니다.
+const CHILD_KEY = 'kkangchong-child', KIDS_KEY = 'kkangchong-children';
+let kids = readJSON(KIDS_KEY, []);
+kids = Array.isArray(kids) ? kids.filter(k => k && typeof k.id === 'string' && typeof k.name === 'string') : [];
+const child = (() => {
+  let id = null; try { id = localStorage.getItem(CHILD_KEY); } catch (e) {}
+  if (!id || !/^[a-z0-9]{1,16}$/.test(id) || (kids.length && !kids.some(k => k.id === id))) id = 'main';
+  return id;
+})();
+const TAG = child === 'main' ? '' : '@' + child;
+const AVATAR = ['--berry', '--plum', '--b0', '--b1', '--carrot', '--star-deep'];
+const kidLabel = (k, i) => k.name || (i === 0 ? '첫째' : `아이 ${i + 1}`);
+function switchChild(id) {
+  if (id === child) return;
+  try { localStorage.setItem(CHILD_KEY, id); } catch (e) {}
+  location.reload();
+}
 
 const PHOTO_STICKERS = [
   ['friend-hug', '꼭 안아줄게', 'hug-v1.png'],
@@ -907,6 +1079,7 @@ function stickerArt(key, name) {
 const PRAISE = ['딩동댕!', '우와, 맞았어!', '최고야!', '정답이야!', '대단해!'];
 const OOPS = ['아까워! 깡충이랑 같이 세어 보자.', '괜찮아! 같이 세어 볼까?', '음~ 한 번 더 세어 보자.'];
 const ORDER = { modes: ['hop', 'candy', 'fish', 'rocket', 'balloon', 'mole', 'carrot'], addends: [1, 2, 3, 4, 5] };
+const MODE_NAMES = { hop: '징검다리', candy: '사탕 상자', fish: '물고기 잡기', rocket: '별 따라 로켓', balloon: '풍선 터뜨리기', mole: '두더지 잡기', carrot: '당근 주기' };
 const NEW_MODES = ['fish', 'rocket', 'mole', 'carrot'];   // 설정 버전 2에서 추가된 놀이
 const LIMITS = { from: [0, 99], to: [0, 99], count: [1, 30] };
 const MAX_CUSTOM = 30;
@@ -923,10 +1096,10 @@ function bunnyArt(pose) {
 }
 
 /* ================= 기기 저장 + 서버 동기화 ================= */
-const KEY = 'kkangchong-math-v1';
-const DEFAULTS = { stars: 0, rounds: 0, stickers: {}, log: {}, missed: {},
+const KEY = 'kkangchong-math-v1' + TAG, ROUND_KEY = 'kkangchong-round-v1' + TAG;
+const DEFAULTS = { stars: 0, rounds: 0, stickers: {}, log: {}, missed: {}, stats: {},
   settings: { v: 2, source: 'range', addends: [2], from: 10, to: 19, carry: 'mix', count: 5,
-              custom: [], order: 'list', modes: ORDER.modes.slice(), voice: true, sfx: true } };
+              custom: [], order: 'list', modes: ORDER.modes.slice(), voice: true, sfx: true, rate: 'normal' } };
 function cleanSettings(raw) {
   const d = DEFAULTS.settings, s = { ...d, ...(raw || {}) };
   if (raw && raw.range && raw.from == null) {            // 예전 버전 설정 옮기기
@@ -952,6 +1125,7 @@ function cleanSettings(raw) {
   if (!s.modes.length) s.modes = d.modes.slice();
   if (!['mix', 'no', 'only'].includes(s.carry)) s.carry = 'mix';
   s.voice = s.voice !== false; s.sfx = s.sfx !== false;
+  if (!['slow', 'normal', 'fast'].includes(s.rate)) s.rate = 'normal';
   return s;
 }
 function load() {
@@ -972,7 +1146,9 @@ save();   // 예전 버전 설정을 옮겼으면 바로 저장
 const S = () => state.settings;
 const keyOf = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const todayLog = () => (state.log[keyOf(new Date())] ||= { solved: 0, first: 0, rounds: 0 });
-function pruneLog() { const keys = Object.keys(state.log).sort(); while (keys.length > 60) delete state.log[keys.shift()]; }
+function pruneLog() {
+  for (const box of [state.log, state.stats || {}]) { const keys = Object.keys(box).sort(); while (keys.length > 60) delete box[keys.shift()]; }
+}
 
 /* ================= 우리말 수 (사탕 개수는 하나·둘·셋) ================= */
 const ONES = ['', '하나', '둘', '셋', '넷', '다섯', '여섯', '일곱', '여덟', '아홉'];
@@ -992,23 +1168,26 @@ const cnt = (n, unit) => n <= 20 ? `${native(n, true)} ${unit}` : `${n}${unit}`;
 
 /* ================= 목소리 (Web Speech API) ================= */
 const synth = 'speechSynthesis' in window ? window.speechSynthesis : null;
-let koVoice = null, lastLine = '';
+let koVoice = null, lastLine = '', onVoices = null;
+const SPEED = { slow: .82, normal: 1, fast: 1.15 };   // 보호자가 고른 말 빠르기
 function pickVoice() {
   if (!synth) return;
   const ko = synth.getVoices().filter(v => /^ko/i.test(v.lang));
   koVoice = ko.find(v => /yuna|유나|sora|heami|female|google/i.test(v.name)) || ko[0] || null;
+  if (onVoices) onVoices();
 }
 if (synth) { pickVoice(); try { synth.addEventListener('voiceschanged', pickVoice); } catch (e) { synth.onvoiceschanged = pickVoice; } }
 const bubble = $('#bubble');
-function say(text, { interrupt = true, show = true, rate = 0.92 } = {}) {
+function say(text, { interrupt = true, show = true, rate = 0.92, force = false } = {}) {
   if (show) { bubble.textContent = text; lastLine = text; bubble.classList.remove('fresh'); void bubble.offsetWidth; bubble.classList.add('fresh'); }
-  if (!synth || !S().voice) return sleep(Math.min(2200, 500 + text.length * 55));
+  if (!synth || (!S().voice && !force)) return sleep(Math.min(2200, 500 + text.length * 55));
+  const speed = SPEED[S().rate] || 1;
   return new Promise(resolve => {
     let done = false; const finish = () => { if (!done) { done = true; resolve(); } };
     const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'ko-KR'; if (koVoice) u.voice = koVoice; u.rate = rate; u.pitch = 1.15;
+    u.lang = 'ko-KR'; if (koVoice) u.voice = koVoice; u.rate = rate * speed; u.pitch = 1.15;
     u.onend = finish; u.onerror = finish;
-    setTimeout(finish, 1500 + text.length * 200);
+    setTimeout(finish, (1500 + text.length * 200) / speed);
     try {
       if (interrupt && (synth.speaking || synth.pending)) { synth.cancel(); setTimeout(() => synth.speak(u), 60); }
       else synth.speak(u);
@@ -1086,12 +1265,15 @@ function tick() {
 
 /* ================= 화면 전환 ================= */
 const SCREENS = ['home', 'setup', 'play', 'reward', 'book', 'parent'];
-let current = 'home', gen = 0, round = null, cur = null;
+let current = 'home', gen = 0, round = null, cur = null, setupFrom = 'home';
 function show(id) {
   SCREENS.forEach(s => { $('#' + s).hidden = s !== id; });
+  $$('.sheet').forEach(sh => { sh.hidden = true; });
   current = id;
   document.body.dataset.screen = id;
   if (id !== 'play') gen++;
+  if (id === 'play') updateReplay();
+  if (id !== 'play' && id !== 'reward') letSleep();
   if (id === 'home') renderHome();
   if (id === 'setup') renderSetup();
   if (id === 'book') renderBook();
@@ -1115,6 +1297,20 @@ function renderHome() {
   $('#starCount').textContent = state.stars;
   $('#stickerCount').textContent = `${haveCount()}/${STICKERS.length}`;
   $('#todayChip').textContent = summary();
+  const r = savedRound();   // 그만뒀던 판이 있으면 '이어 하기'
+  $('#startLabel').textContent = r ? '이어 하기' : '놀이 시작';
+  const rc = $('#resumeCount'); rc.hidden = !r; rc.textContent = r ? `${r.i}/${r.plan.length}` : '';
+  renderKidChip();
+}
+function renderKidChip() {
+  const chip = $('#kidChip'), i = kids.findIndex(k => k.id === child);
+  chip.hidden = kids.length < 2 || i < 0;
+  if (chip.hidden) return;
+  const label = kidLabel(kids[i], i);
+  $('#kidChipAv').textContent = label.slice(0, 1);
+  $('#kidChipAv').style.setProperty('--av', `var(${AVATAR[i % AVATAR.length]})`);
+  $('#kidChipName').textContent = label;
+  chip.setAttribute('aria-label', `지금 노는 아이: ${label}. 누르면 바꿀 수 있어요`);
 }
 
 /* ================= 문제 만들기 ================= */
@@ -1175,18 +1371,20 @@ function renderSetup() {
   $$('#rangePresets .chip').forEach(c => c.setAttribute('aria-pressed', String(+c.dataset.from === s.from && +c.dataset.to === s.to)));
   syncChips();
   renderCustom();
-  const go = $('#setupGo'), note = $('#poolNote');
-  if (s.source === 'custom') { go.disabled = !s.custom.length; return; }
+  const go = $('#setupGo'), note = $('#poolNote'), goNote = $('#goNote');
+  // 시작할 수 없을 때는 이유를 시작 버튼 바로 위에 보여 줌 (아래 패널까지 내려가지 않아도 되게)
+  const block = msg => { go.disabled = !!msg; goNote.hidden = !msg; goNote.textContent = msg || ''; };
+  if (s.source === 'custom') { block(s.custom.length ? '' : '문제를 하나 이상 넣어 주세요.'); return; }
   const pool = buildPool();
   if (!pool.length) {
     $('#samples').innerHTML = '';
-    note.innerHTML = '<span class="warn">조건에 맞는 문제가 없어요.</span> 앞의 수 범위를 넓히거나 "10을 넘어가는 문제"를 섞어서로 바꿔 주세요.';
-    go.disabled = true;
+    note.innerHTML = '<span class="warn">조건에 맞는 문제가 없어요.</span>';
+    block('조건에 맞는 문제가 없어요. 앞의 수 범위를 넓히거나 "10을 넘어가는 문제"를 섞어서로 바꿔 주세요.');
   } else {
     const ex = shuffle(pool).slice(0, 4).sort((x, y) => x[0] - y[0] || x[1] - y[1]);
     $('#samples').innerHTML = ex.map(([a, b]) => `<span class="sample"><span class="a">${a}</span> + <span class="b">${b}</span></span>`).join('');
     note.textContent = `모두 ${pool.length}가지 문제 중에서 ${s.count}개를 골라요.` + (s.count > pool.length ? ' 같은 문제가 다시 나올 수 있어요.' : '');
-    go.disabled = false;
+    block('');
   }
   $('#estTime').textContent = `· 약 ${mins(s.count)}분`;
 }
@@ -1202,7 +1400,7 @@ function renderCustom() {
     : '<li class="cempty">아직 없어요. 위 칸에 문제를 써서 넣어 주세요.</li>';
   $('#cCount').textContent = L.length ? `${L.length}개 · 약 ${mins(L.length)}분` : '';
   const weak = weakList().filter(p => !L.some(q => sameP(p, q)));
-  const wb = $('#cWeak'); wb.hidden = !weak.length; wb.textContent = `틀렸던 문제 넣기 (${weak.length})`;
+  const wb = $('#cWeak'); wb.hidden = !weak.length; wb.textContent = `다시 연습할 문제 넣기 (${weak.length})`;
   $('#cClear').hidden = !L.length;
 }
 function addCustom(items) {
@@ -1292,17 +1490,55 @@ document.addEventListener('click', e => {
   } else S()[key] = v;
   if (key === 'voice' && !v) hush();
   sfx.play('tap'); save();
+  if (key === 'voice' || key === 'rate') updateReplay();
+  if (key === 'rate') say('이 빠르기로 말할게!', { show: false, force: true });
   if (current === 'setup') renderSetup(); else syncChips();
 });
 
 /* ================= 한 판 진행 ================= */
-async function keepAwake() { try { if (navigator.wakeLock) await navigator.wakeLock.request('screen'); } catch (e) {} }
+// 화면 꺼짐 막기: 다른 앱에 다녀오면 풀리므로 놀이 중이면 다시 요청
+let wakeLock = null;
+async function keepAwake() {
+  try {
+    if (!navigator.wakeLock || wakeLock || document.hidden) return;
+    wakeLock = await navigator.wakeLock.request('screen');
+    wakeLock.addEventListener('release', () => { wakeLock = null; });
+  } catch (e) { wakeLock = null; }
+}
+function letSleep() { try { if (wakeLock) wakeLock.release(); } catch (e) {} wakeLock = null; }
 function startRound() {
   const s = S();
-  if (!poolSize()) { show('setup'); toast(s.source === 'custom' ? '문제를 먼저 넣어 주세요' : '조건에 맞는 문제가 없어요'); return; }
+  if (!poolSize()) {   // 아이는 보호자 화면으로 보내지 않고, 보호자에게 알려 줌
+    toast(s.source === 'custom' ? '보호자 메뉴(톱니바퀴 길게 누르기)에서 문제를 먼저 넣어 주세요' : '조건에 맞는 문제가 없어요. 보호자 메뉴에서 문제를 바꿔 주세요');
+    if (current !== 'setup') { say('보호자에게 문제를 정해 달라고 해 줘!', { show: false }); if (current !== 'home') show('home'); }
+    return;
+  }
   sfx.wake(); sfx.play('tap'); keepAwake();
   const queue = s.source === 'custom' ? (s.order === 'shuffle' ? shuffle(s.custom) : s.custom.slice()) : null;
-  round = { plan: planModes(queue ? queue.length : s.count), i: 0, used: new Set(), last: '', queue, settings: JSON.parse(JSON.stringify(s)) };
+  round = { plan: planModes(queue ? queue.length : s.count), i: 0, used: new Set(), last: '', queue, settings: JSON.parse(JSON.stringify(s)), stats: { n: 0, first: 0 } };
+  clearRound();
+  show('play');
+  nextProblem();
+}
+// 그만둔 판은 같은 날 '이어 하기'로 계속함 (이 기기에만 보관)
+function saveRound() {
+  if (!round) return;
+  writeJSON(ROUND_KEY, { day: keyOf(new Date()), plan: round.plan, i: round.i, used: [...round.used], last: round.last, queue: round.queue, settings: round.settings, stats: round.stats });
+}
+function clearRound() { try { localStorage.removeItem(ROUND_KEY); } catch (e) {} }
+function savedRound() {
+  const r = readJSON(ROUND_KEY);
+  if (!r || r.day !== keyOf(new Date()) || !Array.isArray(r.plan) || !r.plan.length || !r.plan.every(m => GAMES[m])) return null;
+  if (!Number.isInteger(r.i) || r.i < 1 || r.i >= r.plan.length || !r.settings || typeof r.settings !== 'object') return null;
+  if (r.queue != null && (!Array.isArray(r.queue) || r.queue.length !== r.plan.length || !r.queue.every(q => Array.isArray(q) && validProblem(q[0], q[1])))) return null;
+  return r;
+}
+function startOrResume() {
+  const r = savedRound();
+  if (!r) { startRound(); return; }
+  sfx.wake(); sfx.play('tap'); keepAwake();
+  const st = r.stats && Number.isInteger(r.stats.n) && Number.isInteger(r.stats.first) ? r.stats : { n: r.i, first: 0 };
+  round = { plan: r.plan, i: r.i, used: new Set(Array.isArray(r.used) ? r.used : []), last: r.last || '', queue: r.queue || null, settings: cleanSettings(r.settings), stats: st };
   show('play');
   nextProblem();
 }
@@ -1311,6 +1547,7 @@ function nextProblem() {
   if (round.i >= round.plan.length) { finishRound(); return; }
   const p = makeProblem();
   round.used.add(p.a + '+' + p.b); round.last = p.a + '+' + p.b;
+  saveRound();
   const mode = round.plan[round.i], G = GAMES[mode];
   cur = { ...p, c: p.a + p.b, mode, first: true, done: false, locked: true, waiting: false, g, pond: null, fit: null };
   const play = $('#play'); play.dataset.mode = mode; play.classList.toggle('stage-ans', !G.skin);
@@ -1335,12 +1572,28 @@ function renderEquation(solved) {
   eq.innerHTML = `<span class="a">${a}</span><span class="op">+</span><span class="b">${b}</span><span class="op">=</span><span class="q${solved ? ' solved' : ''}">${solved ? c : '?'}</span>`;
   eq.setAttribute('aria-label', `${a} 더하기 ${b}는 ${solved ? c : '얼마일까요'}`);
 }
-// 보기 세 개: 정답, 그리고 가장 흔한 실수 — 시작 수까지 세기(c-1), 하나 더 세기(c+1), 더하기를 잊기(a)
+// 보기 세 개: 정답과 아이들이 자주 하는 실수 두 개
+//   시작 수까지 세기(c-1), 하나 더 세기(c+1), 더하기를 잊기(a), 두 칸 어긋남(c±2), 받아올림을 잊기(18+2 → 10)
+// 늘 c-1, c, c+1이면 '가운데 수'만 골라도 맞으므로, 정답이 가장 작은 수·가운데·가장 큰 수가 되는 경우를 고르게 섞음
 function makeOptions() {
-  const { a, c } = cur;
-  const ds = [c - 1, c + 1];
-  if (Math.random() < .25 && a !== c - 1) ds[Math.random() < .5 ? 0 : 1] = a;
-  return shuffle([c, ...ds]);
+  const { a, b, c } = cur;
+  const below = [[c - 1, 3], [a, 2], [c - 2, 1.2]];
+  if (a >= 10 && crosses(a, b)) below.push([c - 10, 1.5]);
+  const above = [[c + 1, 3], [c + 2, 1.5], [c + 3, .6]];
+  const draw = (list, n) => {
+    const cand = list.filter(([v], i) => v >= 0 && v !== c && list.findIndex(([w]) => w === v) === i), out = [];
+    while (out.length < n && cand.length) {
+      let r = Math.random() * cand.reduce((t, [, w]) => t + w, 0), k = 0;
+      while (k < cand.length - 1 && (r -= cand[k][1]) > 0) k++;
+      out.push(cand.splice(k, 1)[0][0]);
+    }
+    return out;
+  };
+  for (const [lo, hi] of shuffle([[2, 0], [1, 1], [0, 2]])) {   // [정답보다 작은 보기 수, 큰 보기 수]
+    const d = [...draw(below, lo), ...draw(above, hi)];
+    if (d.length === 2) return shuffle([c, ...d]);
+  }
+  return shuffle([c, c + 1, c + 2]);
 }
 function renderChoices(skin) {
   const box = $('#choices');
@@ -1370,7 +1623,7 @@ async function choose(btn) {
     $$('#play .ans').forEach(b => { if (b !== btn) b.classList.add('fade'); });
     if (G.win) G.win(btn); else cheer();
     renderEquation(true); record(cur.first);
-    round.i++; renderProgress();
+    round.i++; renderProgress(); saveRound();
     await say(`${pick(PRAISE)} ${cur.a} 더하기 ${cur.b}는 ${cur.c}!`);
     await sleep(450);
     if (alive(g)) nextProblem();
@@ -1388,15 +1641,23 @@ async function choose(btn) {
 function record(first) {
   const d = todayLog(); d.solved++; if (first) d.first++;
   state.stars++;
-  const k = cur.a + '+' + cur.b;
+  round.stats.n++; if (first) round.stats.first++;
+  const k = cur.a + '+' + cur.b, day = keyOf(new Date());
   if (first) { if (state.missed[k]) { state.missed[k]--; if (state.missed[k] <= 0) delete state.missed[k]; } }
   else state.missed[k] = Math.min(3, (state.missed[k] || 0) + 1);
-  pruneLog(); save({ type: 'answer', day: keyOf(new Date()), a: cur.a, b: cur.b, first });
+  // 보호자 화면 '잘하는 것 · 어려운 것'용 통계 (서버 count_stats, sync.js countStats와 같은 규칙)
+  const row = (state.stats ||= {})[day] ||= {};
+  const bump = q => { q[0]++; if (first) q[1]++; };
+  bump(row[crosses(cur.a, cur.b) ? 'carry' : 'plain'] ||= [0, 0]);
+  bump((row.add ||= {})[String(cur.b)] ||= [0, 0]);
+  bump((row.mode ||= {})[cur.mode] ||= [0, 0]);
+  pruneLog(); save({ type: 'answer', day, a: cur.a, b: cur.b, first, mode: cur.mode });
 }
 
 /* ---------- 놀이 1: 징검다리 (수직선 위에서 이어 세기) ---------- */
+const MIN_STONE = 40;   // 돌이 이보다 작아지면 옆으로 밀어 보기
 function mountPond(host, a, b) {
-  const from = Math.max(0, a - 1), to = a + b + 2;
+  const from = Math.max(0, a - 1), to = a + b + (b >= 5 ? 1 : 2), count = to - from + 1;
   let stones = '';
   for (let n = from; n <= to; n++) stones += `<div class="stone${n === a ? ' start' : ''}" data-n="${n}"><span>${n}</span></div>`;
   host.insertAdjacentHTML('beforeend', `<div class="pond"><div class="stones">${stones}<div class="hopper"><div class="bunny">${bunnyArt('hop')}</div></div></div></div>`);
@@ -1407,17 +1668,26 @@ function mountPond(host, a, b) {
     // 돌 크기에 맞춰 토끼 크기, 숫자 크기, 연못 위쪽 여백을 정함 (토끼가 글자나 말풍선을 가리지 않게)
     fit() {
       const st = row.querySelector('.stone'); if (!st) return;
+      const cs = getComputedStyle(el), gap = parseFloat(getComputedStyle(row).columnGap) || 8;
+      const avail = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      const scroll = (avail - gap * (count - 1)) / count < MIN_STONE;
+      el.classList.toggle('scroll', scroll);
+      row.style.width = scroll ? `${count * MIN_STONE + gap * (count - 1)}px` : '';
       const sw = st.offsetWidth, sh = st.offsetHeight;
       const w = clamp(sw * 1.25, 52, 112);
       hopper.style.width = w + 'px';
       row.style.fontSize = clamp(sw / (digits * 0.62 + 0.6), 13, 32) + 'px';
-      el.style.paddingTop = Math.round(body.offsetHeight - sh * 0.14 + 8) + 'px';
+      // 밀어 보기일 때는 연못 밖이 잘리므로 뛰는 높이만큼 위쪽 여백을 더 둠
+      el.style.paddingTop = Math.round(body.offsetHeight * (scroll ? 1.7 : 1) - sh * 0.14 + 8) + 'px';
     },
     place(anim) {
       const st = row.querySelector(`.stone[data-n="${api.pos}"]`); if (!st) return;
       const x = st.offsetLeft + st.offsetWidth / 2 - hopper.offsetWidth / 2;
       hopper.style.transition = anim ? '' : 'none';
       hopper.style.transform = `translateX(${x}px)`;
+      if (el.classList.contains('scroll')) {
+        el.scrollTo({ left: row.offsetLeft + x + hopper.offsetWidth / 2 - el.clientWidth / 2, behavior: anim && !reduceMotion ? 'smooth' : 'auto' });
+      }
       if (anim) { body.classList.remove('jump', 'cheer'); void body.offsetWidth; body.classList.add('jump'); }
     },
     async hop() {
@@ -1453,7 +1723,7 @@ async function doHop(g) {
   say(`${cur.pond.pos}!`, { show: false, rate: 1 });
   cur.hopping = false;
   if (cur.hops === cur.b) {
-    const hb = $('#hopBtn'); if (hb) hb.disabled = true;
+    const hb = $('#hopBtn'); if (hb) { hb.disabled = true; hb.hidden = true; }   // 다 뛰었으면 버튼을 치움
     await sleep(750);
     if (!alive(g)) return;
     revealChoices();
@@ -1561,13 +1831,16 @@ async function hintBalloon(g) {
 
 /* ---------- 놀이 4: 물고기 잡기 (통 속 물고기 수에서 이어 세기) ---------- */
 const FISH_SVG = `<svg class="fishsvg" viewBox="0 0 60 40" aria-hidden="true"><path class="f-tail" d="M15 20 L2 7 Q6 20 2 33 Z"/><ellipse class="f-body" cx="32" cy="20" rx="22" ry="14"/><path class="f-fin" d="M27 7 Q34 0 41 8 Z"/><circle class="f-eye" cx="44" cy="16" r="4.4"/><circle class="f-pupil" cx="45.2" cy="16" r="2.3"/><path class="f-smile" d="M47 25 Q50.5 26.5 53 23"/></svg>`;
+// 열 마리 묶음: 작은 물고기 10마리를 5×2로 모은 그림 (한 마리 그림과 헷갈리지 않게)
+const MINI_FISH = (x, y) => `<g transform="translate(${x} ${y})"><path class="f-tail" d="M5 5.5 L0 1 Q1.8 5.5 0 10 Z"/><ellipse class="f-body" cx="11" cy="5.5" rx="7" ry="4.8"/><circle class="f-pupil" cx="14.6" cy="4.4" r="1.1"/></g>`;
+const SCHOOL_SVG = `<svg viewBox="0 0 96 25" aria-hidden="true">${Array.from({ length: 10 }, (_, i) => MINI_FISH((i % 5) * 19.5, Math.floor(i / 5) * 13.5)).join('')}</svg>`;
 function pailFish(n) {
   const tens = Math.floor(n / 10), ones = n % 10;
   // 한 자리 수는 한 마리씩 크게, 두 자리 수는 열 마리 묶음과 낱마리로 표시합니다.
-  const units = tens + ones, cols = units <= 1 ? 1 : units <= 4 ? 2 : 3;
-  const schools = Array.from({ length: tens }, () => `<span class="pail-school">${FISH_SVG}<span class="pail-school-n">10</span></span>`).join('');
+  const cols = ones <= 1 ? 1 : ones <= 4 ? 2 : tens >= 3 ? 5 : 3;   // 묶음이 많으면 낱마리는 5마리씩 한 줄
+  const schools = Array.from({ length: tens }, () => `<span class="pail-school">${SCHOOL_SVG}<b>10</b></span>`).join('');
   const singles = Array.from({ length: ones }, () => `<span class="pail-resident">${FISH_SVG}</span>`).join('');
-  return `<div class="pail-fish" style="--cols:${cols}" aria-hidden="true">${schools}${singles}</div>`;
+  return `<div class="pail-fish" aria-hidden="true">${tens ? `<div class="pail-tens${tens > 1 ? ' two' : ''}">${schools}</div>` : ''}${ones ? `<div class="pail-ones" style="--cols:${cols}">${singles}</div>` : ''}</div>`;
 }
 async function setupFish(g) {
   const { a, b } = cur;
@@ -1579,7 +1852,7 @@ async function setupFish(g) {
   }).join('');
   const slots = Array.from({ length: b }, () => '<span class="cf"></span>').join('');
   const grouping = a >= 10 ? `, 열 마리 묶음 ${Math.floor(a / 10)}개와 낱마리 ${a % 10}마리` : '';
-  $('#stage').innerHTML = `<div class="fish-wrap"><div class="bucket"><div class="catch">${slots}</div><div class="pail" role="img" aria-label="통 안에 노란 물고기 ${a}마리${grouping}">${pailFish(a)}<div class="pail-label"><b class="pail-n">${a}</b><span class="pail-u">마리</span></div></div></div><div class="sea">${fish}</div></div>`;
+  $('#stage').innerHTML = `<div class="fish-wrap"><div class="bucket${a >= 10 ? ' tens' : ''}"><div class="catch">${slots}</div><div class="pail" role="img" aria-label="통 안에 노란 물고기 ${a}마리${grouping}">${pailFish(a)}<div class="pail-label"><b class="pail-n">${a}</b><span class="pail-u">마리</span></div></div></div><div class="sea">${fish}</div></div>`;
   cur.moved = 0;
   const sea = $('#stage .sea');
   // 헤엄치는 물고기는 손가락을 대자마자 잡히게 (pointerdown), 키보드는 click
@@ -1601,8 +1874,9 @@ async function catchFish(btn, g) {
   if (cur.moved === cur.b) {
     await sleep(900);
     if (!alive(g)) return;
+    const wrap = $('#stage .fish-wrap'); if (wrap) wrap.classList.add('done');   // 빈 바다는 접고 통을 가운데로
     revealChoices();
-    say('통 안의 물고기는 모두 몇 마리일까?', { interrupt: false });
+    say('물고기는 모두 몇 마리일까?', { interrupt: false });
   }
 }
 async function hintFish(g) {
@@ -1661,9 +1935,16 @@ function placeRocket(anim) {
   const sp = $('#space'); if (!sp || !cur || cur.mode !== 'rocket') return;
   sizeStars();
   const rk = $('#rocket'), p = starCenter(cur.pos); if (!p) return;
-  const rw = rk.offsetWidth, rh = rk.offsetHeight;
-  const x = clamp(p.x - p.w * .42 - rw / 2, 2, sp.clientWidth - rw - 2);
-  const y = clamp(p.y - p.w * .62 - rh / 2, 2, sp.clientHeight - rh - 2);
+  rk.style.width = clamp(p.w * .5, 24, 58).toFixed(1) + 'px';
+  const rw = rk.offsetWidth, rh = rk.offsetHeight, W = sp.clientWidth, H = sp.clientHeight;
+  // 왼쪽 위 → 오른쪽 위 → 왼쪽 아래 → 오른쪽 아래 중 우주 안에 들어가는 첫 자리
+  const spots = [[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sy]) => [
+    p.x + sx * (p.w * .4 + rw * .3) - rw / 2,
+    p.y + sy * (p.w * .38 + rh * .3) - rh / 2
+  ]);
+  const fits = ([x0, y0]) => x0 >= 2 && y0 >= 2 && x0 + rw <= W - 2 && y0 + rh <= H - 2;
+  const [x1, y1] = spots.find(fits) || spots[0];
+  const x = clamp(x1, 2, W - rw - 2), y = clamp(y1, 2, H - rh - 2);
   rk.style.transition = anim ? '' : 'none';
   rk.style.transform = `translate(${x}px, ${y}px) rotate(28deg)`;
   const pts = cur.path.map(starCenter).filter(Boolean).map(q => `${q.x.toFixed(1)},${q.y.toFixed(1)}`).join(' ');
@@ -1720,7 +2001,7 @@ function winRocket() {
 const MOLE_SVG = `<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path class="m-body" d="M6 100 V50 C6 20 26 4 50 4 C74 4 94 20 94 50 V100 Z"/><ellipse class="m-belly" cx="50" cy="84" rx="31" ry="24"/><circle class="m-cheek" cx="25" cy="44" r="6"/><circle class="m-cheek" cx="75" cy="44" r="6"/><circle class="m-eye" cx="37" cy="30" r="5"/><circle class="m-eye" cx="63" cy="30" r="5"/><circle class="m-glint" cx="38.6" cy="28.4" r="1.7"/><circle class="m-glint" cx="64.6" cy="28.4" r="1.7"/><ellipse class="m-nose" cx="50" cy="42" rx="8" ry="6"/><rect class="m-tooth" x="45" y="50" width="10" height="7" rx="2"/></svg>`;
 async function setupMole(g) {
   const opts = makeOptions();
-  $('#stage').innerHTML = `<div class="mole-field">${opts.map((v, i) => `<div class="hole"><div class="pit"><button class="ans mole" type="button" data-v="${v}" style="--pd:${(i * 1.4 + Math.random()).toFixed(2)}s" aria-label="${v}">${MOLE_SVG}<span class="sign">${v}</span></button></div></div>`).join('')}</div>`;
+  $('#stage').innerHTML = `${GHOST_STRIP}<div class="mole-field">${opts.map((v, i) => `<div class="hole"><div class="pit"><button class="ans mole" type="button" data-v="${v}" style="--pd:${(i * 1.4 + Math.random()).toFixed(2)}s" aria-label="${v}">${MOLE_SVG}<span class="sign">${v}</span></button></div></div>`).join('')}</div>`;
   cur.waiting = false; cur.locked = true;
   const moles = $$('#stage .mole');
   for (const m of moles) {
@@ -1737,7 +2018,7 @@ async function setupMole(g) {
 const CARROT_SVG = `<svg viewBox="0 0 60 96" aria-hidden="true"><path class="c-leaf" d="M30 27 C24 15 17 9 9 7 C17 15 21 21 25 29 Z M30 27 C30 13 32 6 36 1 C37 11 35 19 33 28 Z M31 28 C38 17 45 12 54 11 C46 19 40 24 34 30 Z"/><path class="c-body" d="M8 33 C8 24 52 24 52 33 C52 53 39 80 30 94 C21 80 8 53 8 33 Z"/></svg>`;
 async function setupCarrot(g) {
   const opts = makeOptions();
-  $('#stage').innerHTML = `<div class="feed"><div class="bunny" id="eater">${bunnyArt('carrot')}</div><div class="basket">${opts.map((v, i) => `<button class="ans carrot${String(v).length > 2 ? ' d3' : ''}" data-own="" type="button" data-v="${v}" style="--i:${i}" aria-label="당근 ${v}">${CARROT_SVG}<span>${v}</span></button>`).join('')}</div></div>`;
+  $('#stage').innerHTML = `${GHOST_STRIP}<div class="feed"><div class="bunny" id="eater">${bunnyArt('carrot')}</div><div class="basket">${opts.map((v, i) => `<button class="ans carrot${String(v).length > 2 ? ' d3' : ''}" data-own="" type="button" data-v="${v}" style="--i:${i}" aria-label="당근 ${v}">${CARROT_SVG}<span>${v}</span></button>`).join('')}</div></div>`;
   cur.waiting = false; cur.locked = false;
   $$('#stage .carrot').forEach(btn => enableDrag(btn, g));
   await say(`깡충이가 배고프대! ${cur.a} 더하기 ${cur.b}는 뭘까? 맞는 당근을 깡충이에게 쏙 넣어 줘!`);
@@ -1772,7 +2053,10 @@ function enableDrag(btn, g) {
     if (e.pointerId !== id) return;
     const dx = e.clientX - sx, dy = e.clientY - sy;
     if (!moved && Math.hypot(dx, dy) > 10) { moved = true; btn.classList.remove('back'); btn.classList.add('dragging'); }
-    if (moved) setCarrot(btn, dx, dy);
+    if (moved) {
+      setCarrot(btn, dx, dy);
+      const eater = $('#eater'); if (eater) { eater.classList.add('drop-ready'); eater.classList.toggle('drop-over', overEater(btn)); }
+    }
   });
   const end = e => {
     if (e.pointerId !== id) return;
@@ -1780,6 +2064,7 @@ function enableDrag(btn, g) {
     if (!moved) return;                       // 그냥 누른 것: click에서 처리
     btn._dragEnd = Date.now();
     btn.classList.remove('dragging');
+    const eater = $('#eater'); if (eater) eater.classList.remove('drop-ready', 'drop-over');
     if (e.type === 'pointerup' && overEater(btn)) giveCarrot(btn, g, true); else springBack(btn);
   };
   btn.addEventListener('pointerup', end);
@@ -1812,6 +2097,7 @@ function winCarrot() {
 }
 
 /* ---------- 틀렸을 때: 이어 세기 띠 (두더지, 당근) ---------- */
+const GHOST_STRIP = '<div class="strip ghost" aria-hidden="true"><b>0</b></div>';
 async function hintStrip(g) {
   const stage = $('#stage');
   $$('.strip', stage).forEach(s => s.remove());
@@ -1840,16 +2126,25 @@ const GAMES = {
 
 /* ================= 선물 ================= */
 let gifted = false;
+const STAR_PATH = 'M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17.1l-5.9 3.2 1.3-6.5L2.5 9.3l6.6-.8z';
+const starIcon = (i = 0) => `<svg class="star-ico" style="--i:${i}" viewBox="0 0 24 24" aria-hidden="true"><path d="${STAR_PATH}"/></svg>`;
 function finishRound() {
   state.rounds++; todayLog().rounds++; save({ type: 'round', day: keyOf(new Date()) });
+  clearRound();
+  const st = round.stats || { n: round.plan.length, first: 0 };
   show('reward');
   gifted = false;
-  $('#rewardTitle').textContent = pick(['참 잘했어요!', '한 판 성공!', '멋져요!']);
+  $('#rewardTitle').textContent = pick(['참 잘했어!', '한 판 성공!', '멋져!']);
   $('#rewardSub').textContent = '선물 상자를 하나 골라 봐!';
+  // 이번 판에 받은 별 (아이용)과 한 번에 맞힌 수 (보호자용)
+  const stars = $('#rewardStars');
+  stars.innerHTML = st.n <= 15 ? Array.from({ length: st.n }, (_, i) => starIcon(i)).join('') : `${starIcon()}<span class="pill-n">× ${st.n}</span>`;
+  stars.setAttribute('aria-label', `이번 판에 별 ${st.n}개`);
+  $('#rewardNote').textContent = st.n ? `${st.n}문제 중 ${st.first}문제를 한 번에 맞혔어요` : '';
   $('#gifts').hidden = false; $('#reveal').hidden = true; $('#rewardActions').hidden = true;
   $('#gifts').innerHTML = [0, 1, 2].map(i => `<button class="gift" type="button" style="--g:var(--b${i});--i:${i}" aria-label="선물 상자 ${i + 1}"><span class="box"></span><span class="lid"></span><span class="bow"></span></button>`).join('');
   sfx.play('fanfare'); burst(innerWidth / 2, innerHeight * .3, 120);
-  say('우와! 한 판을 다 했어! 선물 상자를 하나 골라 봐!', { show: false });
+  say(`우와! 한 판을 다 했어! 별을 ${cnt(st.n, '개')} 받았어! 선물 상자를 하나 골라 봐!`, { show: false });
 }
 $('#gifts').addEventListener('click', async e => {
   const btn = e.target.closest('.gift'); if (!btn || gifted) return;
@@ -1866,38 +2161,82 @@ $('#gifts').addEventListener('click', async e => {
   $('#revealSticker').innerHTML = stickerArt(em, name);
   $('#revealName').textContent = `${name} 스티커!`;
   $('#revealNew').hidden = !isNew;
-  $('#rewardSub').textContent = `스티커 ${haveCount()}개 모았어!`;
+  const complete = isNew && haveCount() === STICKERS.length;   // 방금 마지막 스티커를 모음
+  $('#rewardSub').textContent = complete ? '스티커를 모두 모았어! 정말 대단해!' : `스티커 ${haveCount()}개 모았어!`;
   $('#reveal').hidden = false; $('#rewardActions').hidden = false;
-  sfx.play('good'); burst(innerWidth / 2, innerHeight * .42, 90);
-  say(`와! ${name} 스티커야!`, { show: false });
+  sfx.play(complete ? 'fanfare' : 'good'); burst(innerWidth / 2, innerHeight * .42, complete ? 180 : 90);
+  say(complete ? `와! ${name} 스티커야! 스티커를 모두 모았어! 정말 대단해!` : `와! ${name} 스티커야!`, { show: false });
 });
 
 /* ================= 스티커북 ================= */
 function renderBook() {
-  $('#bookCount').textContent = `${haveCount()}/${STICKERS.length}`;
-  $('#bookGrid').innerHTML = STICKERS.map(([em, name]) => {
+  const have = haveCount();
+  $('#bookCount').textContent = `${have}/${STICKERS.length}`;
+  const banner = have === STICKERS.length ? `<div class="book-banner">${starIcon()}스티커를 모두 모았어!${starIcon()}</div>` : '';
+  // 못 모은 스티커는 그림자로 보여 줘서 어떤 친구를 모을 수 있는지 알 수 있게
+  $('#bookGrid').innerHTML = banner + STICKERS.map(([em, name]) => {
     const k = state.stickers[em] || 0;
     return k
-      ? `<button class="sticker" type="button" data-name="${name}">${stickerArt(em, name)}<span class="nm">${name}</span>${k > 1 ? `<span class="x">×${k}</span>` : ''}</button>`
-      : `<div class="sticker locked" role="img" aria-label="아직 못 모은 스티커"><span class="emo">?</span></div>`;
+      ? `<button class="sticker" type="button" data-sticker="${em}">${stickerArt(em, name)}<span class="nm">${name}</span>${k > 1 ? `<span class="x">×${k}</span>` : ''}</button>`
+      : `<div class="sticker locked" role="img" aria-label="아직 못 모은 스티커">${stickerArt(em, '')}</div>`;
   }).join('');
 }
 $('#bookGrid').addEventListener('click', e => {
-  const b = e.target.closest('.sticker[data-name]'); if (!b) return;
+  const b = e.target.closest('.sticker[data-sticker]'); if (!b) return;
+  const entry = STICKERS.find(([em]) => em === b.dataset.sticker); if (!entry) return;
   b.classList.remove('wiggle'); void b.offsetWidth; b.classList.add('wiggle');
-  sfx.play('tap'); say(b.dataset.name + '!', { show: false });
+  sfx.play('tap');
+  const [em, name] = entry, k = state.stickers[em] || 0;
+  $('#stickerView').innerHTML = stickerArt(em, name);
+  $('#stickerTitle').textContent = name;
+  $('#stickerMeta').textContent = k > 1 ? `${k}번 받았어요` : '';
+  openSheet('#stickerSheet', '#stickerClose');
+  say(name + '!', { show: false });
 });
 
+/* ================= 가운데 창 ================= */
+let sheetReturn = null;
+function openSheet(sel, focusSel) {
+  const sh = $(sel); sheetReturn = document.activeElement; sh.hidden = false;
+  const f = focusSel && $(focusSel, sh); if (f) f.focus({ preventScroll: true });
+}
+function closeSheet(sel) {
+  const sh = $(sel); if (sh.hidden) return;
+  sh.hidden = true;
+  if (sheetReturn && sheetReturn.focus && document.contains(sheetReturn)) sheetReturn.focus({ preventScroll: true });
+  sheetReturn = null;
+}
+$$('.sheet').forEach(sh => sh.addEventListener('click', e => { if (e.target === sh) closeSheet('#' + sh.id); }));   // 바깥을 누르면 닫힘
+document.addEventListener('keydown', e => { if (e.key === 'Escape') $$('.sheet:not([hidden])').forEach(sh => closeSheet('#' + sh.id)); });
+$('#stickerClose').addEventListener('click', () => { sfx.play('tap'); closeSheet('#stickerSheet'); });
+// 놀이 중 집 버튼: 한 번 물어보고, 그만두면 처음 화면에 '이어 하기'
+$('#quitNo').addEventListener('click', () => { sfx.play('tap'); closeSheet('#quitSheet'); if (lastLine) say(lastLine, { show: false }); });
+$('#quitYes').addEventListener('click', () => { hush(); saveRound(); show('home'); });
+// 아이 고르기
+function openKidSheet() {
+  $('#kidPick').innerHTML = kids.map((k, i) => `<button class="big-btn secondary kid-pick" type="button" data-kid="${esc(k.id)}"${k.id === child ? ' aria-current="true"' : ''}><span class="avatar" style="--av:var(${AVATAR[i % AVATAR.length]})" aria-hidden="true">${esc(kidLabel(k, i).slice(0, 1))}</span>${esc(kidLabel(k, i))}</button>`).join('');
+  openSheet('#kidSheet', '.kid-pick[aria-current="true"]');
+  say('누가 놀까?', { show: false });
+}
+$('#kidChip').addEventListener('click', () => { sfx.wake(); sfx.play('tap'); openKidSheet(); });
+$('#kidPick').addEventListener('click', e => {
+  const b = e.target.closest('[data-kid]'); if (!b) return;
+  sfx.play('tap');
+  if (b.dataset.kid === child) closeSheet('#kidSheet'); else switchChild(b.dataset.kid);
+});
+$('#kidClose').addEventListener('click', () => closeSheet('#kidSheet'));
+
 /* ================= 보호자 기록 ================= */
+let chartPeriod = 'day';
 function renderParent() {
+  $('#parentSummary').textContent = summary();
   const t = state.log[keyOf(new Date())] || { solved: 0, first: 0, rounds: 0 };
   $('#statToday').textContent = t.solved;
-  $('#statFirst').textContent = t.solved ? Math.round(t.first / t.solved * 100) + '%' : '–';
+  $('#statFirst').textContent = t.solved ? Math.round(Math.min(t.first, t.solved) / t.solved * 100) + '%' : '–';
   $('#statRounds').textContent = t.rounds;
-  const days = Array.from({ length: 7 }, (_, i) => { const d = new Date(); d.setDate(d.getDate() - (6 - i)); return d; });
-  const vals = days.map(d => (state.log[keyOf(d)] || {}).solved || 0);
-  const max = Math.max(5, ...vals);
-  $('#week').innerHTML = days.map((d, i) => `<div class="col${i === 6 ? ' today' : ''}"><div class="track"><span class="val">${vals[i] || ''}</span><span class="bar" style="height:${(vals[i] / max * 82).toFixed(1)}%"></span></div><span class="day">${i === 6 ? '오늘' : '일월화수목금토'[d.getDay()]}</span></div>`).join('');
+  renderChart(); renderMeters(); renderKids(); renderSyncTime(); renderVoiceNote();
+  const ki = kids.findIndex(k => k.id === child);
+  $('#resetText').textContent = (kids.length > 1 && ki >= 0 ? `${kidLabel(kids[ki], ki)}의 ` : '') + '별, 스티커, 풀이 기록을 연결된 모든 기기에서 지워요. 문제 설정은 그대로 남아요. 인터넷 연결이 끊겨 있으면 다시 연결될 때 반영돼요.';
   const weak = Object.entries(state.missed).sort((x, y) => y[1] - x[1]).slice(0, 12);
   $('#weak').innerHTML = weak.length
     ? weak.map(([k]) => `<span class="w">${k.replace('+', ' + ')}</span>`).join('')
@@ -1905,6 +2244,139 @@ function renderParent() {
   $('#resetConfirm').hidden = true; $('#resetAsk').hidden = false;
   syncChips();
 }
+// 푼 문제 그래프: 7일(하루씩) 또는 8주(7일씩 묶어서). 기록은 60일까지 보관
+function renderChart() {
+  $$('#chartPeriod .chip').forEach(c => c.setAttribute('aria-pressed', String(c.dataset.p === chartPeriod)));
+  const today = new Date(); today.setHours(12, 0, 0, 0);
+  const dayAt = back => { const d = new Date(today); d.setDate(d.getDate() - back); return d; };
+  const solvedOn = d => (state.log[keyOf(d)] || {}).solved || 0;
+  const weeks = chartPeriod === 'week';
+  const cols = weeks
+    ? Array.from({ length: 8 }, (_, w) => {
+        const back = (7 - w) * 7; let v = 0;
+        for (let k = 0; k < 7; k++) v += solvedOn(dayAt(back + k));
+        const first = dayAt(back + 6);
+        return { v, label: w === 7 ? '이번 주' : `${first.getMonth() + 1}/${first.getDate()}`, now: w === 7 };
+      })
+    : Array.from({ length: 7 }, (_, i) => { const d = dayAt(6 - i); return { v: solvedOn(d), label: i === 6 ? '오늘' : '일월화수목금토'[d.getDay()], now: i === 6 }; });
+  $('#chartTitle').textContent = weeks ? '최근 8주 푼 문제' : '최근 7일 푼 문제';
+  const max = Math.max(5, ...cols.map(c => c.v)), week = $('#week');
+  week.classList.toggle('weeks', weeks);
+  week.style.gridTemplateColumns = `repeat(${cols.length},minmax(0,1fr))`;
+  week.innerHTML = cols.map(c => `<div class="col${c.now ? ' today' : ''}"><div class="track"><span class="val">${c.v || ''}</span><span class="bar" style="height:${(c.v / max * 82).toFixed(1)}%"></span></div><span class="day">${c.label}</span></div>`).join('');
+}
+$('#chartPeriod').addEventListener('click', e => { const c = e.target.closest('[data-p]'); if (!c) return; chartPeriod = c.dataset.p; sfx.play('tap'); renderChart(); });
+// 잘하는 것 · 어려운 것: 최근 30일 동안 한 번에 맞힌 비율
+function statTotals(days = 30) {
+  const keep = new Set(Array.from({ length: days }, (_, i) => { const d = new Date(); d.setDate(d.getDate() - i); return keyOf(d); }));
+  const t = { carry: [0, 0], plain: [0, 0], add: {}, mode: {} };
+  const addPair = (q, p) => { if (Array.isArray(p)) { q[0] += +p[0] || 0; q[1] += +p[1] || 0; } };
+  for (const [day, row] of Object.entries(state.stats || {})) {
+    if (!keep.has(day) || !row || typeof row !== 'object') continue;
+    addPair(t.carry, row.carry); addPair(t.plain, row.plain);
+    for (const g of ['add', 'mode']) for (const [k, q] of Object.entries(row[g] || {})) addPair(t[g][k] ||= [0, 0], q);
+  }
+  return t;
+}
+function renderMeters() {
+  const t = statTotals();
+  const row = (label, [n, f]) => {
+    if (!n) return '';
+    const pct = Math.round(Math.min(f, n) / n * 100), hard = n >= 5 && pct < 60;
+    return `<div class="meter-row${hard ? ' hard' : ''}"><div class="mtop"><span class="lbl">${label}${hard ? '<span class="hard-tag">어려워해요</span>' : ''}</span><span class="pct">${pct}% · ${n}문제</span></div><span class="bar2" aria-hidden="true"><i style="width:${pct}%"></i></span></div>`;
+  };
+  const html = [
+    ['10을 넘어가는지', [row('넘어가는 문제', t.carry), row('안 넘어가는 문제', t.plain)]],
+    ['더하는 수', Object.keys(t.add).map(Number).sort((x, y) => x - y).map(b => row('+' + b, t.add[b]))],
+    ['놀이', ORDER.modes.filter(m => t.mode[m]).map(m => row(MODE_NAMES[m], t.mode[m]))]
+  ].map(([h, rows]) => rows.join('') ? `<h4>${h}</h4>${rows.join('')}` : '').join('');
+  $('#meters').innerHTML = html || '<p class="muted">아직 기록이 없어요. 몇 판 놀고 나면 10을 넘어가는 문제, 더하는 수, 놀이별로 얼마나 한 번에 맞히는지 보여 드려요.</p>';
+}
+// 아이 목록 (서버와 연결되어 있을 때만)
+function renderKids() {
+  const panel = $('#kidsPanel');
+  panel.hidden = !sync || !kids.length;
+  if (panel.hidden) return;
+  $('#kidList').innerHTML = kids.map((k, i) => {
+    const label = esc(kidLabel(k, i));
+    return `<div class="kid-row" data-kid="${esc(k.id)}"><span class="avatar" style="--av:var(${AVATAR[i % AVATAR.length]})" aria-hidden="true">${esc(kidLabel(k, i).slice(0, 1))}</span>`
+      + `<input type="text" maxlength="12" value="${esc(k.name)}" placeholder="${i === 0 ? '첫째 이름' : label + ' 이름'}" aria-label="${label} 이름" enterkeyhint="done">`
+      + `<button class="chip" type="button" data-act="rename">이름 저장</button>`
+      + (k.id === child ? '<span class="now">지금 노는 아이</span>' : '<button class="chip" type="button" data-act="switch">이 아이로 바꾸기</button>')
+      + (k.id !== 'main' && k.id !== child ? '<button class="chip danger" type="button" data-act="remove">지우기</button>' : '')
+      + '</div>';
+  }).join('');
+  $('#kidAdd').disabled = kids.length >= 6;
+}
+async function manageKids(op, done) {
+  if (!sync) return null;
+  try { const r = await sync.manage(op); toast(done); return r; }
+  catch (e) { toast('인터넷에 연결된 뒤 다시 해 주세요'); return null; }
+}
+let removeArm = { id: null, at: 0 };   // 아이 지우기는 3초 안에 한 번 더 눌러야 지워짐
+$('#kidList').addEventListener('click', async e => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const rowEl = b.closest('.kid-row'), id = rowEl.dataset.kid;
+  sfx.play('tap');
+  if (b.dataset.act === 'switch') { switchChild(id); return; }
+  if (b.dataset.act === 'rename') {
+    const name = rowEl.querySelector('input').value.trim();
+    if (!name) { toast('이름을 써 주세요'); return; }
+    await manageKids({ op: 'renameChild', child: id, name }, '이름을 바꿨어요');
+    renderKids(); renderKidChip();
+    return;
+  }
+  if (removeArm.id !== id || Date.now() - removeArm.at > 3000) {
+    removeArm = { id, at: Date.now() }; b.textContent = '한 번 더 누르면 기록까지 지워져요'; b.classList.add('solid');
+    return;
+  }
+  removeArm = { id: null, at: 0 };
+  if (await manageKids({ op: 'removeChild', child: id }, '지웠어요')) {
+    try { Object.keys(localStorage).filter(k => k.includes('@' + id)).forEach(k => localStorage.removeItem(k)); } catch (err) {}
+    renderKids(); renderKidChip();
+  }
+});
+$('#kidList').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.matches('input')) { e.preventDefault(); e.target.closest('.kid-row').querySelector('[data-act="rename"]').click(); }
+});
+async function addKid() {
+  const inp = $('#kidName'), name = inp.value.trim();
+  if (!name) { inp.focus(); toast('새 아이 이름을 써 주세요'); return; }
+  const r = await manageKids({ op: 'addChild', name }, '새 아이를 추가했어요. 처음 화면 위쪽에서 고를 수 있어요');
+  if (r && r.created) {
+    // 새 아이는 지금 문제 설정을 이어받아 시작
+    writeJSON('kkangchong-math-v1@' + r.created, { ...JSON.parse(JSON.stringify(DEFAULTS)), settings: JSON.parse(JSON.stringify(S())) });
+    inp.value = '';
+    renderKids();
+  }
+}
+$('#kidAdd').addEventListener('click', addKid);
+$('#kidName').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addKid(); } });
+// 마지막 저장 시각과 보내지 못한 기록 (터치 기기에서도 보이게 글자로)
+let syncInfo = { kind: null, pending: 0, updatedAt: null };
+function fmtWhen(iso) {
+  const d = new Date(iso); if (isNaN(d)) return '';
+  const time = d.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' });
+  return keyOf(d) === keyOf(new Date()) ? `오늘 ${time}` : `${d.getMonth() + 1}월 ${d.getDate()}일 ${time}`;
+}
+function renderSyncTime() {
+  const el = $('#syncTime'), parts = [];
+  if (syncInfo.updatedAt) parts.push(`마지막 저장: ${fmtWhen(syncInfo.updatedAt)}`);
+  if (syncInfo.pending && syncInfo.kind !== 'saving') parts.push(`아직 보내지 못한 기록 ${syncInfo.pending}개`);
+  el.textContent = parts.join(' · '); el.hidden = !parts.length;
+}
+// 목소리 점검: 한국어 목소리가 없는 기기는 알려 줌
+function renderVoiceNote() {
+  const el = $('#voiceNote'); let text, warn = true;
+  if (!synth) text = '이 브라우저는 목소리 읽기를 지원하지 않아요. 글자와 효과음으로 진행돼요.';
+  else if (!koVoice) text = '이 기기에서 한국어 목소리를 찾지 못했어요. 기기 설정에서 한국어 음성(TTS)을 내려받으면 자연스럽게 읽어요.';
+  else { text = `쓰는 목소리: ${koVoice.name}`; warn = false; }
+  el.textContent = text; el.classList.toggle('warn', warn);
+  $('#voiceTest').disabled = !synth;
+}
+onVoices = () => { if (current === 'parent') renderVoiceNote(); };
+$('#voiceTest').addEventListener('click', () => { say('안녕! 나는 깡충이야. 18 더하기 2는 20!', { show: false, force: true }); });
+$('#toSetup').addEventListener('click', () => { sfx.play('tap'); setupFrom = 'parent'; show('setup'); });
 $('#resetAsk').addEventListener('click', () => { $('#resetAsk').hidden = true; $('#resetConfirm').hidden = false; });
 $('#resetNo').addEventListener('click', () => { $('#resetAsk').hidden = false; $('#resetConfirm').hidden = true; });
 $('#resetYes').addEventListener('click', () => {
@@ -1912,29 +2384,42 @@ $('#resetYes').addEventListener('click', () => {
   renderParent(); toast('기록을 지웠어요');
 });
 
-/* 보호자 버튼: 1.5초 길게 눌러야 열림 (아이가 실수로 못 들어가게) */
-const gear = $('#parentBtn'); let holdT = 0;
-function startHold(e) { if (e) e.preventDefault(); gear.classList.add('holding'); clearTimeout(holdT); holdT = setTimeout(() => { holdT = 0; gear.classList.remove('holding'); sfx.play('tap'); show('parent'); }, 1500); }
-function endHold() { if (holdT) { clearTimeout(holdT); holdT = 0; toast('보호자 기록은 톱니바퀴를 길게 눌러 주세요'); } gear.classList.remove('holding'); }
-gear.addEventListener('pointerdown', startHold);
-['pointerup', 'pointerleave', 'pointercancel'].forEach(t => gear.addEventListener(t, endHold));
-gear.addEventListener('contextmenu', e => e.preventDefault());
-gear.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) startHold(e); });
-gear.addEventListener('keyup', e => { if (e.key === 'Enter' || e.key === ' ') endHold(); });
+/* 보호자용 버튼: 1.5초 길게 눌러야 열림 (아이가 실수로 못 들어가게) */
+function holdable(el, onDone, tip, ms = 1500) {
+  let t = 0;
+  const start = e => {
+    if (e && e.cancelable) e.preventDefault();
+    el.classList.add('holding'); clearTimeout(t);
+    t = setTimeout(() => { t = 0; el.classList.remove('holding'); sfx.play('tap'); onDone(); }, ms);
+  };
+  const end = () => { if (t) { clearTimeout(t); t = 0; toast(tip); } el.classList.remove('holding'); };
+  el.addEventListener('pointerdown', start);
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(k => el.addEventListener(k, end));
+  el.addEventListener('contextmenu', e => e.preventDefault());
+  el.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) start(e); });
+  el.addEventListener('keyup', e => { if (e.key === 'Enter' || e.key === ' ') end(); });
+}
+holdable($('#parentBtn'), () => show('parent'), '보호자 메뉴는 톱니바퀴를 길게 눌러 주세요');
+holdable($('#rewardSetup'), () => { hush(); setupFrom = 'home'; show('setup'); }, '문제 바꾸기는 보호자가 길게 눌러 주세요');
 
 /* ================= 버튼 연결 ================= */
-$('#startBtn').addEventListener('click', () => { sfx.wake(); sfx.play('tap'); show('setup'); });
+$('#startBtn').addEventListener('click', () => { sfx.wake(); startOrResume(); });
 $('#setupGo').addEventListener('click', startRound);
-$('#setupBack').addEventListener('click', () => show('home'));
+$('#setupBack').addEventListener('click', () => show(setupFrom === 'parent' ? 'parent' : 'home'));
 $('#againBtn').addEventListener('click', startRound);
 $('#bookBtn').addEventListener('click', () => { sfx.wake(); sfx.play('tap'); show('book'); });
 $('#toBookBtn').addEventListener('click', () => { sfx.play('tap'); show('book'); });
 $('#rewardHome').addEventListener('click', () => { hush(); show('home'); });
-$('#rewardSetup').addEventListener('click', () => { hush(); show('setup'); });
-$('#homeBtn').addEventListener('click', () => { hush(); show('home'); });
+$('#homeBtn').addEventListener('click', () => { sfx.play('tap'); openSheet('#quitSheet', '#quitNo'); say('그만할까?', { show: false }); });
 $('#bookBack').addEventListener('click', () => { hush(); show('home'); });
 $('#parentBack').addEventListener('click', () => show('home'));
 $('#replayBtn').addEventListener('click', () => { if (lastLine) say(lastLine, { show: false }); });
+// 목소리를 끄거나 목소리 기능이 없으면 '다시 듣기'는 아무 일도 못 하므로 감춤
+function updateReplay() {
+  const b = $('#replayBtn'), ok = !!synth && S().voice;
+  b.classList.toggle('invisible', !ok); b.disabled = !ok;
+  if (ok) b.removeAttribute('aria-hidden'); else b.setAttribute('aria-hidden', 'true');
+}
 $('#play').addEventListener('click', e => { const b = e.target.closest('.ans'); if (b && !('own' in b.dataset)) choose(b); });
 $('#homeBunny').addEventListener('click', () => {
   sfx.wake(); sfx.play('hop');
@@ -1948,7 +2433,10 @@ addEventListener('resize', () => {
   if (cur.pond) { cur.pond.fit(); cur.pond.place(false); }
   if (cur.fit) cur.fit();
 });
-document.addEventListener('visibilitychange', () => { if (document.hidden) hush(); });
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) hush();
+  else if (current === 'play' || current === 'reward') keepAwake();
+});
 
 /* ================= 시작 ================= */
 sizeFx();
@@ -1956,7 +2444,17 @@ document.body.dataset.screen = 'home';
 renderHome();
 if (window.KkangchongSync) {
   sync = window.KkangchongSync.create({
-    initialState: state, defaults: DEFAULTS, cleanSettings,
+    initialState: state, defaults: DEFAULTS, cleanSettings, child,
+    onChildren(list) {
+      const clean = list.filter(k => k && typeof k.id === 'string' && typeof k.name === 'string');
+      const changed = JSON.stringify(clean) !== JSON.stringify(kids);
+      kids = clean; writeJSON(KIDS_KEY, kids);
+      if (!kids.some(k => k.id === child)) { switchChild('main'); return; }   // 다른 기기에서 지운 아이
+      if (!changed) return;
+      if (current === 'home') renderKidChip();
+      if (current === 'parent' && !document.activeElement.matches('#kidsPanel input')) renderKids();
+    },
+    onGone() { switchChild('main'); },
     onChange(updated) {
       const changed = JSON.stringify(state) !== JSON.stringify(updated);
       state = updated; persistLocal();
@@ -1975,11 +2473,13 @@ if (window.KkangchongSync) {
         reset: '다른 기기에서 지운 기록을 반영했어요.'
       };
       const el = $('#syncStatus'); el.textContent = messages[kind]; el.dataset.status = kind;
-      if (kind === 'saved' && detail.updatedAt) el.title = new Date(detail.updatedAt).toLocaleString('ko-KR');
+      syncInfo = { kind, pending: detail.pending || 0, updatedAt: detail.updatedAt || syncInfo.updatedAt };
+      renderSyncTime();
     }
   });
 }
 $('#syncNow').addEventListener('click', () => { if (sync) sync.flush(); });
+renderKidChip();
 if ('serviceWorker' in navigator && document.querySelector('link[rel="manifest"]')) {
   addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
 }

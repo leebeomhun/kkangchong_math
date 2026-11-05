@@ -1,6 +1,6 @@
 // 깡충 수학 서비스 워커: 앱 파일을 캐시해 두고 인터넷 없이도 실행되게 합니다.
 // index.html 등을 고친 뒤 배포할 때는 VERSION 숫자를 올려 주세요.
-const VERSION = 'v11';
+const VERSION = 'v12';
 const APP_CACHE = `kkangchong-app-${VERSION}`;
 const FONT_CACHE = 'kkangchong-fonts';
 const ASSETS = [
