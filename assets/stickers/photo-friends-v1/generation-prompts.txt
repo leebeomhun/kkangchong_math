@@ -1,0 +1,87 @@
+File: hug-v1.png
+Storage key: friend-hug
+Name: 꼭 안아줄게
+
+Use case: stylized-concept
+Asset type: A single transparent PNG collectible reward sticker for a Korean math game for a six-year-old.
+Input images: Image 1 is the identity and plush-toy reference, not an edit target. Image 2 is ONLY the visual style reference from the app's existing sticker collection.
+Subjects: the same six-year-old girl as Image 1, recognizable dark hair in two side pigtails with small pink ties, side-swept fringe, round gentle face, dark eyes, dusty lavender lace-collar dress. Her beloved rabbit plush MUST resemble Image 1: warm ivory shaggy boucle fur, two very long floppy drooping ears with pale tiny pink-and-green floral cotton lining, shiny small black bead eyes, a large dusty-pink inverted triangular nose, tiny stitched dark mouth, soft long cuddly body and floppy limbs. It is a stuffed toy, not a live upright-eared rabbit.
+Style: delightful polished chibi children's stationery illustration, rounded proportions, gentle warm cocoa outlines, soft pastel shading and rosy cheeks. Match Image 2's sweet die-cut sticker quality. Child-friendly and warm; stylized likeness, not photorealistic.
+Composition: ONE cohesive standalone sticker; centered full unclipped composition on a square transparent canvas, entire silhouette plus a neat cream-white die-cut border occupying roughly 85% of the canvas. Generous transparent margin on every side. Favor readable faces and clear limbs at thumbnail size. Very subtle edge shadow.
+Constraints: actual alpha transparency around the sticker, no painted checkerboard, no opaque rectangle, no text, letters, numbers, watermark, logo, extra people or extra toys. Preserve all distinctive child and rabbit features.
+Pose / primary request: The girl sits hugging the rabbit plush lovingly cheek to cheek with both arms, her eyes smiling gently. The rabbit's long floral ears hang clearly in view. A tiny pink heart floats beside them. Both characters form one compact warm cuddle sticker.
+
+---
+
+File: peace-v1.png
+Storage key: friend-peace
+Name: 브이 친구
+
+Use case: stylized-concept
+Asset type: A single transparent PNG collectible reward sticker for a Korean math game for a six-year-old.
+Input images: Image 1 is the identity and plush-toy reference, not an edit target. Image 2 is a finished sticker of this same girl and rabbit. Match its character likeness, warm color palette, illustration style, cream die-cut edge and level of detail consistently.
+Subjects: the same six-year-old girl as Image 1, recognizable dark hair in two side pigtails with small pink ties, side-swept fringe, round gentle face, dark eyes, dusty lavender lace-collar dress. Her beloved rabbit plush MUST resemble Image 1: warm ivory shaggy boucle fur, two very long floppy drooping ears with pale tiny pink-and-green floral cotton lining, shiny small black bead eyes, a large dusty-pink inverted triangular nose, tiny stitched dark mouth, soft long cuddly body and floppy limbs. It is a stuffed toy, not a live upright-eared rabbit.
+Style: delightful polished chibi children's stationery illustration, rounded proportions, gentle warm cocoa outlines, soft pastel shading and rosy cheeks. Match Image 2's sweet die-cut sticker quality. Child-friendly and warm; stylized likeness, not photorealistic.
+Composition: ONE cohesive standalone sticker; centered full unclipped composition on a square transparent canvas, entire silhouette plus a neat cream-white die-cut border occupying roughly 85% of the canvas. Generous transparent margin on every side. Favor readable faces and clear limbs at thumbnail size. Very subtle edge shadow.
+Constraints: actual alpha transparency around the sticker, no painted checkerboard, no opaque rectangle, no text, letters, numbers, watermark, logo, extra people or extra toys. Preserve all distinctive child and rabbit features.
+Pose / primary request: The girl smiles at the viewer, holding the beloved rabbit under one arm while making a clear V peace sign with her other hand, echoing the reference photo. Seated compact full-body pose, both faces clearly visible, the rabbit's two floral drooping ears clearly shown. One small pink sparkle beside the peace sign.
+
+---
+
+File: reading-v1.png
+Storage key: friend-reading
+Name: 같이 공부해
+
+Use case: stylized-concept
+Asset type: A single transparent PNG collectible reward sticker for a Korean math game for a six-year-old.
+Input images: Image 1 is the identity and plush-toy reference, not an edit target. Image 2 is a finished sticker of this same girl and rabbit. Match its character likeness, warm color palette, illustration style, cream die-cut edge and level of detail consistently.
+Subjects: the same six-year-old girl as Image 1, recognizable dark hair in two side pigtails with small pink ties, side-swept fringe, round gentle face, dark eyes, dusty lavender lace-collar dress. Her beloved rabbit plush MUST resemble Image 1: warm ivory shaggy boucle fur, two very long floppy drooping ears with pale tiny pink-and-green floral cotton lining, shiny small black bead eyes, a large dusty-pink inverted triangular nose, tiny stitched dark mouth, soft long cuddly body and floppy limbs. It is a stuffed toy, not a live upright-eared rabbit.
+Style: delightful polished chibi children's stationery illustration, rounded proportions, gentle warm cocoa outlines, soft pastel shading and rosy cheeks. Match Image 2's sweet die-cut sticker quality. Child-friendly and warm; stylized likeness, not photorealistic.
+Composition: ONE cohesive standalone sticker; centered full unclipped composition on a square transparent canvas, entire silhouette plus a neat cream-white die-cut border occupying roughly 85% of the canvas. Generous transparent margin on every side. Favor readable faces and clear limbs at thumbnail size. Very subtle edge shadow.
+Constraints: actual alpha transparency around the sticker, no painted checkerboard, no opaque rectangle, no text, letters, numbers, watermark, logo, extra people or extra toys. Preserve all distinctive child and rabbit features.
+Pose / primary request: The girl and her beloved rabbit sit side by side leaning over one open pastel mint picture book in their laps. The girl points at a simple small star illustration on a book page. The pages have absolutely no text, numbers or lettering. The rabbit leans cozily against her, its long floral ears falling to either side. Happy curious expressions. A compact cohesive full-body duo sticker, no desk or room.
+
+---
+
+File: star-v1.png
+Storage key: friend-star
+Name: 반짝반짝 잘했어
+
+Use case: stylized-concept
+Asset type: A single transparent PNG collectible reward sticker for a Korean math game for a six-year-old.
+Input images: Image 1 is the identity and plush-toy reference, not an edit target. Image 2 is a finished sticker of this same girl and rabbit. Match its character likeness, warm color palette, illustration style, cream die-cut edge and level of detail consistently.
+Subjects: the same six-year-old girl as Image 1, recognizable dark hair in two side pigtails with small pink ties, side-swept fringe, round gentle face, dark eyes, dusty lavender lace-collar dress. Her beloved rabbit plush MUST resemble Image 1: warm ivory shaggy boucle fur, two very long floppy drooping ears with pale tiny pink-and-green floral cotton lining, shiny small black bead eyes, a large dusty-pink inverted triangular nose, tiny stitched dark mouth, soft long cuddly body and floppy limbs. It is a stuffed toy, not a live upright-eared rabbit.
+Style: delightful polished chibi children's stationery illustration, rounded proportions, gentle warm cocoa outlines, soft pastel shading and rosy cheeks. Match Image 2's sweet die-cut sticker quality. Child-friendly and warm; stylized likeness, not photorealistic.
+Composition: ONE cohesive standalone sticker; centered full unclipped composition on a square transparent canvas, entire silhouette plus a neat cream-white die-cut border occupying roughly 85% of the canvas. Generous transparent margin on every side. Favor readable faces and clear limbs at thumbnail size. Very subtle edge shadow.
+Constraints: actual alpha transparency around the sticker, no painted checkerboard, no opaque rectangle, no text, letters, numbers, watermark, logo, extra people or extra toys. Preserve all distinctive child and rabbit features.
+Pose / primary request: The girl and her beloved rabbit sit together holding ONE big softly glowing butter-yellow five-pointed star in front of them as a math-game success reward. The girl is visibly delighted, with an open happy smile; the rabbit has its same tiny stitched smile. Their faces, the star and long floral ears are all clearly readable. Two tiny golden sparkles. Compact full-body duo sticker.
+
+---
+
+File: carrot-v1.png
+Storage key: friend-carrot
+Name: 당근 선물이야
+
+Use case: stylized-concept
+Asset type: A single transparent PNG collectible reward sticker for a Korean math game for a six-year-old.
+Input images: Image 1 is the identity and plush-toy reference, not an edit target. Image 2 is a finished sticker of this same girl and rabbit. Match its character likeness, warm color palette, illustration style, cream die-cut edge and level of detail consistently.
+Subjects: the same six-year-old girl as Image 1, recognizable dark hair in two side pigtails with small pink ties, side-swept fringe, round gentle face, dark eyes, dusty lavender lace-collar dress. Her beloved rabbit plush MUST resemble Image 1: warm ivory shaggy boucle fur, two very long floppy drooping ears with pale tiny pink-and-green floral cotton lining, shiny small black bead eyes, a large dusty-pink inverted triangular nose, tiny stitched dark mouth, soft long cuddly body and floppy limbs. It is a stuffed toy, not a live upright-eared rabbit.
+Style: delightful polished chibi children's stationery illustration, rounded proportions, gentle warm cocoa outlines, soft pastel shading and rosy cheeks. Match Image 2's sweet die-cut sticker quality. Child-friendly and warm; stylized likeness, not photorealistic.
+Composition: ONE cohesive standalone sticker; centered full unclipped composition on a square transparent canvas, entire silhouette plus a neat cream-white die-cut border occupying roughly 85% of the canvas. Generous transparent margin on every side. Favor readable faces and clear limbs at thumbnail size. Very subtle edge shadow.
+Constraints: actual alpha transparency around the sticker, no painted checkerboard, no opaque rectangle, no text, letters, numbers, watermark, logo, extra people or extra toys. Preserve all distinctive child and rabbit features.
+Pose / primary request: The girl kneels, smiling gently, offering one small bright orange carrot with green leaves to her beloved seated rabbit plush. The rabbit is cuddled at her side and one plush paw rests on the carrot. Their faces look toward each other. Show the rabbit's large pink nose and two very long floral floppy ears, plus the girl's lavender dress and pigtails. Compact cohesive full-body duo sticker. No garden or setting.
+
+---
+
+File: cheer-v1.png
+Storage key: friend-cheer
+Name: 깡충깡충 응원해
+
+Use case: stylized-concept
+Asset type: A single transparent PNG collectible reward sticker for a Korean math game for a six-year-old.
+Input images: Image 1 is the identity and plush-toy reference, not an edit target. Image 2 is a finished sticker of this same girl and rabbit. Match its character likeness, warm color palette, illustration style, cream die-cut edge and level of detail consistently.
+Subjects: the same six-year-old girl as Image 1, recognizable dark hair in two side pigtails with small pink ties, side-swept fringe, round gentle face, dark eyes, dusty lavender lace-collar dress. Her beloved rabbit plush MUST resemble Image 1: warm ivory shaggy boucle fur, two very long floppy drooping ears with pale tiny pink-and-green floral cotton lining, shiny small black bead eyes, a large dusty-pink inverted triangular nose, tiny stitched dark mouth, soft long cuddly body and floppy limbs. It is a stuffed toy, not a live upright-eared rabbit.
+Style: delightful polished chibi children's stationery illustration, rounded proportions, gentle warm cocoa outlines, soft pastel shading and rosy cheeks. Match Image 2's sweet die-cut sticker quality. Child-friendly and warm; stylized likeness, not photorealistic.
+Composition: ONE cohesive standalone sticker; centered full unclipped composition on a square transparent canvas, entire silhouette plus a neat cream-white die-cut border occupying roughly 85% of the canvas. Generous transparent margin on every side. Favor readable faces and clear limbs at thumbnail size. Very subtle edge shadow.
+Constraints: actual alpha transparency around the sticker, no painted checkerboard, no opaque rectangle, no text, letters, numbers, watermark, logo, extra people or extra toys. Preserve all distinctive child and rabbit features.
+Pose / primary request: The girl jumps joyfully in a cute compact celebratory pose, cuddling her beloved rabbit securely against her chest with one arm while raising her free hand in a cheerful wave. Her pigtails bounce, lavender dress remains age-appropriate, the toy's long floral ears swing softly. Two tiny pink and butter-yellow celebration sparkles. A dynamic but fully framed cohesive full-body duo sticker; no lettering or confetti field.

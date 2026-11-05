@@ -1,0 +1,33 @@
+File: floral-bunny-hop-v1.png
+
+Use case: stylized-concept
+Asset type: ONE transparent PNG gameplay mascot illustration for a math game for a six-year-old.
+Input images: Image 1 is the original reference photograph; use its rabbit plush ONLY, without the child. Image 2 is the finished homepage illustration of that same rabbit; match its identity, proportions, ivory boucle fur texture, floral inner ears, large dusty-pink triangular nose, tiny dark stitched mouth, and black bead eyes closely.
+Subject constraints: the SAME beloved cuddly ivory stuffed rabbit from both references. Very long soft FLOPPY ears hanging or trailing, never upright rabbit ears; pale floral cotton lining with small pink flowers and green leaves; cozy shaggy ivory boucle fur; round head and cuddly soft limbs. No clothes, bow, extra characters, or live-animal realism.
+Style: polished softly shaded warm children's storybook/stationery illustration, friendly and readable at 90-180 pixels, warm cream and gentle pastel details, matching Image 2. Actual alpha transparent background, no opaque panel, painted checkerboard, floor, scenery, text, watermarks, letters or numbers.
+Composition: square transparent canvas, one cohesive full-body mascot composition including all ear tips, paws, and any specified prop entirely within the frame, generous 6% transparent safety margin on all sides; image fills about 86% of the canvas. No sticker border for these gameplay assets.
+Primary request: Show the rabbit in a lively little hop toward the RIGHT, body at a gentle three-quarter side angle, front face still recognizable and visible, hind feet reaching down for the next stepping stone. One front paw reaches forward, the other bends slightly, its long floral ears trail behind softly. A joyful energetic but cuddly plush pose; no stone, water, ground, speed lines, decorations or extra props. The whole rabbit should be centered and fully framed. Clearly the rabbit from Image 2 jumping, not a different character.
+
+---
+
+File: floral-bunny-balloon-v1.png
+
+Use case: stylized-concept
+Asset type: ONE transparent PNG gameplay mascot illustration for a math game for a six-year-old.
+Input images: Image 1 is the original reference photograph; use its rabbit plush ONLY, without the child. Image 2 is the finished homepage illustration of that same rabbit; match its identity, proportions, ivory boucle fur texture, floral inner ears, large dusty-pink triangular nose, tiny dark stitched mouth, and black bead eyes closely.
+Subject constraints: the SAME beloved cuddly ivory stuffed rabbit from both references. Very long soft FLOPPY ears hanging or trailing, never upright rabbit ears; pale floral cotton lining with small pink flowers and green leaves; cozy shaggy ivory boucle fur; round head and cuddly soft limbs. No clothes, bow, extra characters, or live-animal realism.
+Style: polished softly shaded warm children's storybook/stationery illustration, friendly and readable at 90-180 pixels, warm cream and gentle pastel details, matching Image 2. Actual alpha transparent background, no opaque panel, painted checkerboard, floor, scenery, text, watermarks, letters or numbers.
+Composition: square transparent canvas, one cohesive full-body mascot composition including all ear tips, paws, and any specified prop entirely within the frame, generous 6% transparent safety margin on all sides; image fills about 86% of the canvas. No sticker border for these gameplay assets.
+Primary request: Show the rabbit sitting facing the viewer with its feet visible and head tilted cheerfully, holding the string of ONE round pastel sky-blue balloon with a tiny pink highlight. The balloon floats just beside its head, not far above it, so the rabbit remains the dominant subject and its face remains large. Keep both long floral drooping ears visible. Compact balanced single mascot composition suitable for the balloon arithmetic game. No clouds, floor, sky, basket or extra objects.
+
+---
+
+File: floral-bunny-carrot-v1.png
+
+Use case: stylized-concept
+Asset type: ONE transparent PNG gameplay mascot illustration for a math game for a six-year-old.
+Input images: Image 1 is the original reference photograph; use its rabbit plush ONLY, without the child. Image 2 is the finished homepage illustration of that same rabbit; match its identity, proportions, ivory boucle fur texture, floral inner ears, large dusty-pink triangular nose, tiny dark stitched mouth, and black bead eyes closely.
+Subject constraints: the SAME beloved cuddly ivory stuffed rabbit from both references. Very long soft FLOPPY ears hanging or trailing, never upright rabbit ears; pale floral cotton lining with small pink flowers and green leaves; cozy shaggy ivory boucle fur; round head and cuddly soft limbs. No clothes, bow, extra characters, or live-animal realism.
+Style: polished softly shaded warm children's storybook/stationery illustration, friendly and readable at 90-180 pixels, warm cream and gentle pastel details, matching Image 2. Actual alpha transparent background, no opaque panel, painted checkerboard, floor, scenery, text, watermarks, letters or numbers.
+Composition: square transparent canvas, one cohesive full-body mascot composition including all ear tips, paws, and any specified prop entirely within the frame, generous 6% transparent safety margin on all sides; image fills about 86% of the canvas. No sticker border for these gameplay assets.
+Primary request: Show the rabbit seated facing directly toward the viewer, leaning forward a tiny bit eagerly with both soft empty front paws open at belly level, ready to receive a carrot from the player. A hungry but very happy expression, small visible dark stitched smiling mouth just below its large pink triangular nose. The face and mouth should be clear and centered around 40% of the canvas height, body and feet below. Both long floral ears frame the body. There must be NO carrot in this illustration because the interactive game supplies the carrot separately. No bowl, plate, additional props or decorations. Same rabbit as Image 2, in an expectant welcoming pose.

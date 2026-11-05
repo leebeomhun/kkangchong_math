@@ -1,0 +1,9 @@
+# 아이 실제 사진: 앱에서 쓰지 않으며 공개 저장소에 올리지 않습니다.
+assets/image/
+
+# 파이썬 캐시
+__pycache__/
+*.pyc
+
+# 이 컴퓨터에서만 쓰는 Claude Code 설정
+.claude/settings.local.json
